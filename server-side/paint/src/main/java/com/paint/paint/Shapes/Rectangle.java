@@ -5,6 +5,7 @@ public class Rectangle extends Shape {
     public int height;
 
     public Rectangle() {
+        this.name = "Rectangle";
     }
 
     public Rectangle(Rectangle target) {

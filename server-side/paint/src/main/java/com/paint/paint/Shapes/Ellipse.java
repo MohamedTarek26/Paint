@@ -5,6 +5,7 @@ public class Ellipse extends Shape{
     public int radiusY;
 
     public Ellipse() {
+        this.name = "Ellipse";
     }
 
     public Ellipse(Ellipse target) {

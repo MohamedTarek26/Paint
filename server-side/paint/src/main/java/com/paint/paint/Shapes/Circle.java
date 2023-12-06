@@ -1,9 +1,11 @@
 package  com.paint.paint.Shapes;
 
 public class Circle extends Shape {
+
     public int radius;
 
     public Circle() {
+        this.name = "Circle";
     }
 
     public Circle(Circle target) {

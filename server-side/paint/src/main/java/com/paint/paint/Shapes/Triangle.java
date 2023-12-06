@@ -5,6 +5,7 @@ public class Triangle extends Shape{
     public int radius;
 
     public Triangle() {
+        this.name = "Triangle";
     }
 
     public Triangle(Triangle target) {

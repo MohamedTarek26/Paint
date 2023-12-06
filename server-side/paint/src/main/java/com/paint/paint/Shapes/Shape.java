@@ -1,6 +1,7 @@
 package com.paint.paint.Shapes;
 
 public abstract class Shape {
+    String name;
     private float x;
     private float y;
 
@@ -34,6 +35,12 @@ public abstract class Shape {
     }
     public String getStroke() {
         return Stroke;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
     }
     public void setx(float x) {
         this.x = x;
