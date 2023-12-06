@@ -9,11 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 //import com.paint.paint.ShapeManager.*;
 import com.paint.paint.Shapes.Shape;
 
-import java.beans.XMLEncoder;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 @XmlRootElement
@@ -36,10 +32,11 @@ public class XmlEncoder {
         XMLShapes wrapper = new XMLShapes();
         wrapper.setShapes(shapeList);
 
-       try (XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(filePath)))) {
-            encoder.writeObject(shapeList);
-        } catch (FileNotFoundException e) {
-            System.err.println("File not found: " + e.getMessage());
-        }
+        // Create JAXB context and marshaller
+        JAXBContext context = JAXBContext.newInstance(XMLShapes.class);
+        Marshaller marshaller = context.createMarshaller();
+
+        // Marshal to XML and save to file
+        marshaller.marshal(wrapper, new File(filePath));
     }
 }

@@ -9,12 +9,16 @@ import javax.xml.bind.JAXBException;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paint.paint.ShapeManager.Director;
 import com.paint.paint.Shapes.Shape;
 import com.paint.paint.events.*;
+import com.paint.paint.upload.FileUploadResponse;
+import com.paint.paint.upload.FileUploadUtil;
 import com.paint.paint.upload.XmlEncoder;
 
 
@@ -136,6 +140,22 @@ public class PaintController {
         String filePath = "src/main/java/com/paint/paint/shapes.xml";
 
         XmlEncoder.encodeToXml(director.getCache(), filePath);
+
+    }
+    
+     @PostMapping("/file/upload")
+    public ResponseEntity<FileUploadResponse> uploadFile(@RequestParam("file") MultipartFile multipartFile) throws IOException {
+        String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+        long size = multipartFile.getSize();
+        String fileType = multipartFile.getContentType();
+        FileUploadResponse response = new FileUploadResponse();
+        FileUploadUtil.saveFile(fileName, multipartFile);
+        response.setName(fileName);
+        response.setSize(size);
+        response.setType(fileType);
+        response.setDownloadUri("/paint/file/download?fileName=" + fileName);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+
 
     }
 
