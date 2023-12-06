@@ -13,7 +13,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 @XmlRootElement
-class XMLShapes {
+class  XMLShapes {
     private ArrayList<Shape> shapes;
 
     @XmlElement(name="shape")

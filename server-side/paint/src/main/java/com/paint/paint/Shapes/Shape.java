@@ -1,5 +1,24 @@
 package com.paint.paint.Shapes;
 
+import javax.xml.bind.annotation.XmlSeeAlso;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+
+@JsonTypeInfo(
+  use = JsonTypeInfo.Id.NAME, 
+  include = JsonTypeInfo.As.EXISTING_PROPERTY,
+  property = "name")
+@JsonSubTypes({
+  @JsonSubTypes.Type(value = Circle.class, name = "Circle"),
+  @JsonSubTypes.Type(value = Ellipse.class, name = "Ellipse"),
+  @JsonSubTypes.Type(value = Rectangle.class, name = "Rectangle"),
+  @JsonSubTypes.Type(value = Square.class, name = "Square"),
+  @JsonSubTypes.Type(value = Triangle.class, name = "Triangle"),
+  @JsonSubTypes.Type(value = Line.class, name = "Line")
+})
+@XmlSeeAlso({Circle.class, Rectangle.class, Ellipse.class, Rectangle.class, Square.class, Triangle.class, Line.class})
 public abstract class Shape {
     String name;
     private float x = 100;

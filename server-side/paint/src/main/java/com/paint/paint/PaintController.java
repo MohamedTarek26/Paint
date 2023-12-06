@@ -1,5 +1,9 @@
 package com.paint.paint;
 
+import java.beans.XMLDecoder;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -9,17 +13,29 @@ import javax.xml.bind.JAXBException;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.File;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.paint.paint.ShapeManager.Director;
+import com.paint.paint.ShapeManager.XMLShapes;
 import com.paint.paint.Shapes.Shape;
 import com.paint.paint.events.*;
 import com.paint.paint.upload.FileUploadResponse;
 import com.paint.paint.upload.FileUploadUtil;
 import com.paint.paint.upload.XmlEncoder;
+
 
 
 @RestController
@@ -38,7 +54,7 @@ public class PaintController {
 
     // create a shape according to shapeType by adding a create event and applying it
     @PostMapping("/create")
-    public Shape createShape(@RequestBody String shapeType){
+    public Shape createShape(@RequestParam String shapeType){
         CreateShapeEvent event = new CreateShapeEvent(director, shapeType);
         eventsHandler.addEvent(event);
         event.apply();
@@ -47,7 +63,7 @@ public class PaintController {
 
     // copy a shape according to shapeIndex by adding a copy event and applying it
     @PostMapping("/copy")
-    public Shape copyShape(@RequestBody int shapeIndex){
+    public Shape copyShape(@RequestParam int shapeIndex){
         CopyEvent event = new CopyEvent(director, shapeIndex);
         eventsHandler.addEvent(event);
         event.apply();
@@ -56,7 +72,7 @@ public class PaintController {
 
     // remove a shape according to shapeIndex by adding a remove event and applying it
     @PostMapping("/remove")
-    public void removeShape(@RequestBody int shapeIndex){
+    public void removeShape(@RequestParam int shapeIndex){
         RemoveShapeEvent event = new RemoveShapeEvent(director, shapeIndex);
         eventsHandler.addEvent(event);
         event.apply();
@@ -73,11 +89,10 @@ public class PaintController {
     }
 
     @PostMapping("/transform")
-    public void transformShape(@RequestBody int[] indexes){
-        int id = indexes[0];
+    public void transformShape(@RequestParam int id, @RequestParam float scaleX, @RequestParam int scaleY, @RequestParam float rotation){
         Shape shape = director.getShapeFromRegistry(id);
 
-        TransformEvent event = new TransformEvent(director,id,shape.getScaleX(),shape.getScaleY(),shape.getRotation(),indexes[1],indexes[2],indexes[3]);
+        TransformEvent event = new TransformEvent(director,id,shape.getScaleX(),shape.getScaleY(),shape.getRotation(),scaleX,scaleY,rotation);
         eventsHandler.addEvent(event);
         event.apply();
     }
@@ -109,14 +124,16 @@ public class PaintController {
     }
 
     @PostMapping("/undo")
-    public void undo(){
+    public ArrayList<Shape> undo(){
         eventsHandler.undo();
+        return director.getCache();
     }
 
     @PostMapping("/redo")
-    public void redo(){
+    public ArrayList<Shape> redo(){
 
         eventsHandler.redo();
+        return director.getCache();
     }
     
     @GetMapping("/events_size")
@@ -124,41 +141,86 @@ public class PaintController {
 
         return eventsHandler.size();
     }
+    
 
-    //  @GetMapping("/load/json")
-    // public ArrayList<Shape> get() {
+    public ResponseEntity<InputStreamResource> makeFileDownloadable(String filePath){
+        try {
+            File file = new File(filePath);
+            InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
 
-    //     createShapes shapes = new createShapes();
-    //     return shapes.create();
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + file.getName())
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .contentLength(file.length())
+                    .body(resource);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-    // }
+        return ResponseEntity.badRequest().build();
+    }
 
-    @GetMapping("/save/xml")
-    public void savexml() throws JAXBException {
+    @GetMapping("/download/json")
+    public ResponseEntity<InputStreamResource> saveJson() {
+        ObjectMapper mapper = new ObjectMapper();
+        List<Shape> shapes = director.getCache();
+        String filePath = "src/main/java/com/paint/paint/saved/shapes.json";
+
+        try {
+            mapper.writeValue(new File(filePath), shapes);
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        return makeFileDownloadable(filePath);
+    }
+
+
+    @GetMapping("/download/xml")
+    public ResponseEntity<InputStreamResource> savexml() throws JAXBException {
 
         
-        String filePath = "src/main/java/com/paint/paint/shapes.xml";
+        String filePath = "src/main/java/com/paint/paint/saved/shapes.xml";
+        ArrayList<Shape> shapes = director.getCache();
 
-        XmlEncoder.encodeToXml(director.getCache(), filePath);
+        XmlEncoder.encodeToXml(shapes, filePath);
 
+        return makeFileDownloadable(filePath);
     }
-    
-     @PostMapping("/file/upload")
-    public ResponseEntity<FileUploadResponse> uploadFile(@RequestParam("file") MultipartFile multipartFile) throws IOException {
+    @PostMapping("/upload/xml")
+    public ResponseEntity<List<Shape>> uploadXml(@RequestParam("file") MultipartFile multipartFile) throws IOException {
         String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-        long size = multipartFile.getSize();
-        String fileType = multipartFile.getContentType();
-        FileUploadResponse response = new FileUploadResponse();
         FileUploadUtil.saveFile(fileName, multipartFile);
-        response.setName(fileName);
-        response.setSize(size);
-        response.setType(fileType);
-        response.setDownloadUri("/paint/file/download?fileName=" + fileName);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-
-
+    
+        // Deserialize XML file into List<Shape>
+        List<Shape> shapes;
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(XMLShapes.class);
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            XMLShapes shapesWrapper = (XMLShapes) jaxbUnmarshaller.unmarshal(new File("src/main/java/com/paint/paint/saved/shapes.xml"));
+            shapes = shapesWrapper.getShapes();
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    
+        return ResponseEntity.ok(shapes);
     }
 
-    
+    @PostMapping("/upload/json")
+    public List<Shape> uploadJson(@RequestParam("file") MultipartFile multipartFile) throws IOException {
+        String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+        FileUploadUtil.saveFile(fileName, multipartFile);
+
+        // Deserialize JSON file into List<Shape>
+        ObjectMapper mapper = new ObjectMapper();
+        List<Shape> shapes = mapper.readValue(multipartFile.getInputStream(), new TypeReference<List<Shape>>(){});
+        
+        return shapes;
+    }
+
+
 
 }

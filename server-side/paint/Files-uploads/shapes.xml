@@ -1,16 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <xmlShapes>
-    <shape>
-        <name>Line</name>
-        <rotation>0.0</rotation>
-        <scaleX>1.0</scaleX>
-        <scaleY>1.0</scaleY>
-        <stroke>Transparent</stroke>
-        <color>Black</color>
-        <x>100.0</x>
-        <y>100.0</y>
-    </shape>
-    <shape>
+    <shape xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="circle">
         <name>Circle</name>
         <rotation>0.0</rotation>
         <scaleX>1.0</scaleX>
@@ -19,8 +9,21 @@
         <color>Black</color>
         <x>100.0</x>
         <y>100.0</y>
+        <radius>50</radius>
     </shape>
-    <shape>
+    <shape xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="triangle">
+        <name>Triangle</name>
+        <rotation>0.0</rotation>
+        <scaleX>1.0</scaleX>
+        <scaleY>1.0</scaleY>
+        <stroke>Transparent</stroke>
+        <color>Black</color>
+        <x>100.0</x>
+        <y>100.0</y>
+        <sides>3</sides>
+        <radius>90</radius>
+    </shape>
+    <shape xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="square">
         <name>Square</name>
         <rotation>0.0</rotation>
         <scaleX>1.0</scaleX>
@@ -29,5 +32,7 @@
         <color>Black</color>
         <x>100.0</x>
         <y>100.0</y>
+        <width>100</width>
+        <height>100</height>
     </shape>
 </xmlShapes>
