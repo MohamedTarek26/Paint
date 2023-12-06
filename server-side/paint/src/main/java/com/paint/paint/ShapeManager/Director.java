@@ -1,4 +1,6 @@
 package com.paint.paint.ShapeManager;
+import java.util.ArrayList;
+
 import com.paint.paint.Shapes.Shape;
 public class Director {
     ShapeRegistry registry = new ShapeRegistry();
@@ -65,4 +67,8 @@ public class Director {
     public int getRegistrySize(){
         return registry.size();
     }
+
+     public ArrayList<Shape> getCache(){
+        return registry.getCache();
+    } 
 }

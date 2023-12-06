@@ -8,6 +8,7 @@ public class CreateShapeEvent implements Event{
     private Director director;
     private String shapeType;
     private int shapeIndex = -1;
+    private Shape createdShape;
 
     public CreateShapeEvent(Director director, String shapeType){
         this.director = director;
@@ -17,7 +18,7 @@ public class CreateShapeEvent implements Event{
 
     @Override
     public void apply() {
-        Shape shape = director.addShape(shapeType);
+        createdShape = director.addShape(shapeType);
         shapeIndex = director.getRegistrySize() - 1;
     }
 
@@ -25,7 +26,12 @@ public class CreateShapeEvent implements Event{
     public void revert() {
         if (shapeIndex != -1) {
             director.removeShape(shapeIndex);
+            createdShape = null;
         }
+    }
+
+    public Shape getCreatedShape(){
+        return createdShape;
     }
     
 }

@@ -1,8 +1,8 @@
 package  com.paint.paint.Shapes;
 
 public class Ellipse extends Shape{
-    public int radiusX;
-    public int radiusY;
+    public int radiusX = 50;
+    public int radiusY = 30;
 
     public Ellipse() {
         this.name = "Ellipse";
@@ -13,6 +13,7 @@ public class Ellipse extends Shape{
         if (target != null) {
             this.radiusX = target.radiusX;
             this.radiusY = target.radiusY;
+            this.name = "Ellipse";
         }
     }
 

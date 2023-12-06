@@ -2,17 +2,17 @@ package com.paint.paint.Shapes;
 
 public abstract class Shape {
     String name;
-    private float x;
-    private float y;
+    private float x = 100;
+    private float y = 100;
 
-    private float scaleX;
-    private float scaleY;
+    private float scaleX = 1;
+    private float scaleY = 1;
 
-    private float rotation;
+    private float rotation = 0;
 
-    private String color;
+    private String color = "Black";
 
-    private String Stroke;
+    private String Stroke = "Transparent";
 
 
     public float getx() {

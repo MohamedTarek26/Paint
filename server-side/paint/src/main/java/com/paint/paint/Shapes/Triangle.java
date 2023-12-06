@@ -1,8 +1,8 @@
 package com.paint.paint.Shapes;
 
 public class Triangle extends Shape{
-    public int sides;
-    public int radius;
+    public int sides = 3;
+    public int radius = 90;
 
     public Triangle() {
         this.name = "Triangle";
@@ -13,6 +13,7 @@ public class Triangle extends Shape{
         if (target != null) {
             this.sides = target.sides;
             this.radius = target.radius;
+            this.name = "Triangle";
         }
     }
 

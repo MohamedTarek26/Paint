@@ -38,4 +38,8 @@ public class ShapeRegistry {
     public Shape get(int key) {
         return cache.get(key);
     }
+
+    public ArrayList<Shape> getCache(){
+        return cache;
+    }
 }

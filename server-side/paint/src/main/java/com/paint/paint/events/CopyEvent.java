@@ -8,6 +8,7 @@ public class CopyEvent implements Event{
     private Director director;
     private int shapeIndex;
     private int newShapeIndex = -1;
+    private Shape createdShape;
 
     public CopyEvent(Director director, int shapeIndex){
         this.director = director;
@@ -26,6 +27,10 @@ public class CopyEvent implements Event{
         if (newShapeIndex != -1) {
             director.removeShape(newShapeIndex);
         }
+    }
+
+    public Shape getCreatedShape(){
+        return createdShape;
     }
     
 }

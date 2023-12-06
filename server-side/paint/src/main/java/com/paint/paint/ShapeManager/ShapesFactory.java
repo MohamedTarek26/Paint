@@ -1,10 +1,5 @@
 package com.paint.paint.ShapeManager;
-import com.paint.paint.Shapes.Shape;
-import com.paint.paint.Shapes.Circle;
-import com.paint.paint.Shapes.Line;
-import com.paint.paint.Shapes.Triangle;
-import com.paint.paint.Shapes.Rectangle;
-import com.paint.paint.Shapes.Ellipse;
+import com.paint.paint.Shapes.*;
 public class ShapesFactory {
     public ShapesFactory() {
     }
@@ -25,6 +20,9 @@ public class ShapesFactory {
         }
         else if (shapeType.equalsIgnoreCase("ELLIPSE")) {
             return new Ellipse();
+        }
+        else if (shapeType.equalsIgnoreCase("SQUARE")) {
+            return new Square();
         }
         else {
             return null;

@@ -9,6 +9,8 @@ public class RemoveShapeEvent implements Event{
     private int shapeIndex;
     private Shape shape;
 
+    private boolean isRemoved = false;
+
     public RemoveShapeEvent(Director director, int shapeIndex){
         this.director = director;
         this.shapeIndex = shapeIndex;
@@ -19,12 +21,12 @@ public class RemoveShapeEvent implements Event{
     public void apply() {
         shape = director.getShapeFromRegistry(shapeIndex).clone();
         director.removeShape(shapeIndex);
-        shapeIndex = -1;
+        isRemoved = true;
     }
 
     @Override
     public void revert() {
-        if (shapeIndex != -1) {
+        if (isRemoved) {
             director.addShape(shapeIndex, shape);
         }
     }
