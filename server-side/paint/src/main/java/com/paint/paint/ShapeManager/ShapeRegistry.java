@@ -1,8 +1,7 @@
 package com.paint.paint.ShapeManager;
 import com.paint.paint.Shapes.Shape;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.ArrayList;
+
 public class ShapeRegistry {
     private ArrayList<Shape> cache = new ArrayList<Shape>();
 
@@ -11,6 +10,10 @@ public class ShapeRegistry {
 
     public void put(Shape shape) {
         cache.add(shape);
+    }
+
+    public void putAt(int key ,Shape shape) {
+        cache.add(key,shape);
     }
     public int size() {
         return cache.size();
@@ -24,8 +27,8 @@ public class ShapeRegistry {
     }
     public void putAt(int oldKey,int newKey,Shape shape)
     {
-        cache.add(newKey,shape);
         cache.remove(oldKey);
+        cache.add(newKey,shape);
     }
     public Shape copy(int key) {
         Shape shape = cache.get(key).clone();

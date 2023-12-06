@@ -1,5 +1,5 @@
 package com.paint.paint.ShapeManager;
-import com.paint.paint.Shapes.*;
+import com.paint.paint.Shapes.Shape;
 public class Director {
     ShapeRegistry registry = new ShapeRegistry();
     public Director() {
@@ -7,23 +7,35 @@ public class Director {
     public void removeShape(int Id) {
         registry.remove(Id);
     }
-    public void putShapeOnTop(int Id) {
+    public int putShapeOnTop(int Id) {
         Shape shape=this.getShapeFromRegistry(Id);
         registry.putOnTop(Id, shape);
+        return registry.size() - 1;
     }
-    public Shape getShape(String shapeType) {
+    public Shape addShape(String shapeType) {
         Shape shape = ShapesFactory.getShape(shapeType);
         registry.put(shape);
         return shape;
     }
-    public Shape CopyShape(int Id) {
+
+    public Shape addShape(int Id, String shapeType) {
+        Shape shape = ShapesFactory.getShape(shapeType);
+        return this.addShape(Id,shape);
+    }
+
+    public Shape addShape(int Id, Shape shape) {
+        registry.putAt(Id,shape);
+        return shape;
+    }
+
+    public Shape copyShape(int Id) {
         return registry.copy(Id);
     }
     public Shape getShapeFromRegistry(int Id) {
         return registry.get(Id);
     }
-    public void putShapeAt(int Id, int oldKey, int newKey) {
-        Shape shape=this.getShapeFromRegistry(Id);
+    public void putShapeAt(int oldKey, int newKey) {
+        Shape shape=this.getShapeFromRegistry(oldKey).clone();
         registry.putAt(oldKey, newKey, shape);
     }
     public void moveShape(int Id, float x, float y) {
@@ -43,5 +55,14 @@ public class Director {
     public void changeColor(int Id, String color) {
         Shape shape = registry.get(Id);
         shape.setcolor(color);
+    }
+
+    public void changeStroke(int Id, String stroke) {
+        Shape shape = registry.get(Id);
+        shape.setStroke(stroke);
+    }
+
+    public int getRegistrySize(){
+        return registry.size();
     }
 }
