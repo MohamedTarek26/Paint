@@ -38,7 +38,8 @@ public class Director {
         return registry.get(Id);
     }
     public void putShapeAt(int oldKey, int newKey) {
-        Shape shape=this.getShapeFromRegistry(oldKey).clone();
+        Shape oldshape=this.getShapeFromRegistry(oldKey);
+        Shape shape= oldshape.clone();
         registry.putAt(oldKey, newKey, shape);
     }
     public void moveShape(int Id, float x, float y) {
