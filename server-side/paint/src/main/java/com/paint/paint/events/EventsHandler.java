@@ -21,8 +21,16 @@ public class EventsHandler {
 
     public void undo(){
         if (currentEventIndex >= 0){
-            events.get(currentEventIndex).revert();
+
+            Event currentEvent = events.get(currentEventIndex);
+            currentEvent.revert();
             currentEventIndex--;
+
+            // check if currentEvent is of type SelectionChangeEvent
+            if (currentEventIndex >= 0 && currentEvent instanceof SelectionChangeEvent){
+                events.get(currentEventIndex).revert();
+                currentEventIndex--;
+            }
         }
     }
 
