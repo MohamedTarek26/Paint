@@ -15,7 +15,6 @@ public class Rectangle extends Shape {
             this.width = target.width;
             this.height = target.height;
             this.name = "Rectangle";
-            this.setcolor("#ff0266");
         }
     }
 

@@ -15,7 +15,6 @@ public class Ellipse extends Shape{
             this.radiusX = target.radiusX;
             this.radiusY = target.radiusY;
             this.name = "Ellipse";
-            this.setcolor("#2c7bb6");
         }
     }
 

@@ -15,7 +15,6 @@ public class Square extends Shape {
             this.width = target.width;
             this.height = target.height;
             this.name = "Square";
-            this.setcolor("#ffde86");
         }
     }
 
