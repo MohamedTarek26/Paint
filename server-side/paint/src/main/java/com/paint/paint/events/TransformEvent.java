@@ -8,6 +8,10 @@ public class TransformEvent implements Event {
   private float oldScaleY;
   private float newScaleX;
   private float newScaleY;
+  private float oldX;
+  private float oldY;
+  private float newX;
+  private float newY;
   private float oldRotation;
   private float newRotation;
   private Director director;
@@ -21,7 +25,11 @@ public class TransformEvent implements Event {
     float oldRotation,
     float newScaleX,
     float newScaleY,
-    float newRotation
+    float newRotation,
+    float oldX,
+    float oldY,
+    float newX,
+    float newY
   ) {
     this.oldScaleX = oldScaleX;
     this.oldScaleY = oldScaleY;
@@ -31,18 +39,24 @@ public class TransformEvent implements Event {
     this.newRotation = newRotation;
     this.director = director;
     this.shapeIndex = shapeIndex;
+    this.oldX = oldX;
+    this.oldY = oldY;
+    this.newX= newX;
+    this.newY = newY;
   }
 
   @Override
   public void apply() {
     director.resizeShape(shapeIndex, newScaleX, newScaleY);
     director.rotateShape(shapeIndex, newRotation);
+    director.moveShape(shapeIndex, newX, newY);
   }
 
   @Override
   public void revert() {
     director.resizeShape(shapeIndex, oldScaleX, oldScaleY);
     director.rotateShape(shapeIndex, oldRotation);
+    director.moveShape(shapeIndex, oldX, oldY);
   }
 
   public double getOldScaleX() {
@@ -75,5 +89,19 @@ public class TransformEvent implements Event {
 
   public int getShapeIndex() {
     return shapeIndex;
+  }
+  public float getOldX() {
+    return oldX;
+  }
+
+  public float getOldY() {
+    return oldY;
+  }
+
+  public float getNewX() {
+    return newX;
+  }
+  public float getNewY() {
+    return newY;
   }
 }
