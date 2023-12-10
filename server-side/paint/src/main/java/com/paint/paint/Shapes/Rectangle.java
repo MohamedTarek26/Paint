@@ -6,6 +6,7 @@ public class Rectangle extends Shape {
 
     public Rectangle() {
         this.name = "Rectangle";
+        this.setcolor("Red");
     }
 
     public Rectangle(Rectangle target) {
@@ -14,6 +15,7 @@ public class Rectangle extends Shape {
             this.width = target.width;
             this.height = target.height;
             this.name = "Rectangle";
+            this.setcolor("Red");
         }
     }
 

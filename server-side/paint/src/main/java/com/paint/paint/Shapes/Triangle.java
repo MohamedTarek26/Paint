@@ -6,6 +6,7 @@ public class Triangle extends Shape{
 
     public Triangle() {
         this.name = "Triangle";
+        this.setcolor("Orange");
     }
 
     public Triangle(Triangle target) {
@@ -14,6 +15,7 @@ public class Triangle extends Shape{
             this.sides = target.sides;
             this.radius = target.radius;
             this.name = "Triangle";
+            this.setcolor("Orange");
         }
     }
 

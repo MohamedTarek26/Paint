@@ -6,6 +6,7 @@ public class Square extends Shape {
 
     public Square() {
         this.name = "Square";
+        this.setcolor("Yellow");
     }
 
     public Square(Square target) {
@@ -14,6 +15,7 @@ public class Square extends Shape {
             this.width = target.width;
             this.height = target.height;
             this.name = "Square";
+            this.setcolor("Yellow");
         }
     }
 
