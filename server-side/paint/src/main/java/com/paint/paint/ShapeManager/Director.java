@@ -1,5 +1,6 @@
 package com.paint.paint.ShapeManager;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.paint.paint.Shapes.Shape;
 public class Director {
@@ -70,5 +71,9 @@ public class Director {
 
      public ArrayList<Shape> getCache(){
         return registry.getCache();
-    } 
+    }
+
+    public void setCache(List<Shape> shapes) {
+        registry.setCache(shapes);
+    }
 }

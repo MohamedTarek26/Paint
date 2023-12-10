@@ -51,4 +51,8 @@ public class EventsHandler {
     public int size(){
         return events.size();
     }
+
+    public ArrayList<Event> getEvents() {
+        return events;
+    }
 }

@@ -61,13 +61,20 @@ public class PaintController {
         return event.getCreatedShape();
     }
 
+    @GetMapping("/clear")
+    public void clear(){
+        director.setCache(new ArrayList<Shape>());
+        eventsHandler.clear();
+    }
     // copy a shape according to shapeIndex by adding a copy event and applying it
     @PostMapping("/copy")
     public Shape copyShape(@RequestParam int shapeIndex){
         CopyEvent event = new CopyEvent(director, shapeIndex);
         eventsHandler.addEvent(event);
         event.apply();
-        return event.getCreatedShape();
+        event.getCreatedShape();
+        Shape shape=(director.getCache()).get(shapeIndex);
+        return shape;
     }
 
     // remove a shape according to shapeIndex by adding a remove event and applying it
@@ -89,9 +96,12 @@ public class PaintController {
     }
 
     @PostMapping("/transform")
-    public void transformShape(@RequestParam int id, @RequestParam float scaleX, @RequestParam int scaleY, @RequestParam float rotation){
+    public void transformShape(@RequestParam int id, @RequestParam float scaleX, @RequestParam float scaleY, @RequestParam float rotation){
         Shape shape = director.getShapeFromRegistry(id);
-
+        if(scaleX==shape.getScaleX()&&scaleY==shape.getScaleY()&&rotation==shape.getRotation())
+        {
+            return;
+        }
         TransformEvent event = new TransformEvent(director,id,shape.getScaleX(),shape.getScaleY(),shape.getRotation(),scaleX,scaleY,rotation);
         eventsHandler.addEvent(event);
         event.apply();
@@ -140,6 +150,11 @@ public class PaintController {
     public int size(){
 
         return eventsHandler.size();
+    }
+    @GetMapping("/list_events")
+    public ArrayList<Event> listEvents(){
+
+        return eventsHandler.getEvents();
     }
     
 
@@ -201,6 +216,8 @@ public class PaintController {
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             XMLShapes shapesWrapper = (XMLShapes) jaxbUnmarshaller.unmarshal(new File("src/main/java/com/paint/paint/saved/shapes.xml"));
             shapes = shapesWrapper.getShapes();
+            eventsHandler.clear();
+            director.setCache(shapes);
         } catch (JAXBException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -216,8 +233,9 @@ public class PaintController {
 
         // Deserialize JSON file into List<Shape>
         ObjectMapper mapper = new ObjectMapper();
+        eventsHandler.clear();
         List<Shape> shapes = mapper.readValue(multipartFile.getInputStream(), new TypeReference<List<Shape>>(){});
-        
+        director.setCache(shapes);
         return shapes;
     }
 

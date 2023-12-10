@@ -9,7 +9,7 @@
       </select>
       <button @click="loadOneShape">Load one shape</button>
       <label>Load</label>
-      <input type="file" @change="load">
+      <input type="file" @change="load" />
       <button @click="createShape">Add Shape</button>
       <select v-model="selectedShapeType">
         <option value="line">Line</option>
@@ -24,45 +24,55 @@
       <button @click="redo">Redo</button>
       <button @click="deleteShape" v-if="selectedShape !== null">Delete</button>
       <div v-if="selectedShape !== null">
-        <label style="font:bold;">Color:</label>
+        <label style="font: bold">Color:</label>
         <!-- <label>X:</label>
         <input type="x_select" v-model="xValue" @change="changex" />
         <label>Y:</label>
         <input type="number" v-model="yValue" @change="changey" />  -->
-        <label style="font:300;">Fill:</label>
-        <input type="checkbox" v-model="isFilled"  @change="changeColorFill" />
-        <input type="color" v-if="isFilled" v-model="FillcolorValue"  @change="changeColorFill"/>
-        
-        <label style="font:300;">Stroke:</label>
+        <label style="font: 300">Fill:</label>
+        <input type="checkbox" v-model="isFilled" @change="changeColorFill" />
+        <input
+          type="color"
+          v-if="isFilled"
+          v-model="FillcolorValue"
+          @change="changeColorFill"
+        />
+
+        <label style="font: 300">Stroke:</label>
         <input type="checkbox" v-model="isStroke" @change="changeColorStroke" />
-        <input type="color" v-if="isStroke" v-model=StrokecolorValue   @change="changeColorStroke"/>
+        <input
+          type="color"
+          v-if="isStroke"
+          v-model="StrokecolorValue"
+          @change="changeColorStroke"
+        />
         <button @click="copy">Copy</button>
-        
-        
 
         <!-- <label>Width:</label>
         <input type="number" v-model="shapes[selectedShape].width" />
         <label>Height:</label> 
         <input type="number" v-model="shapes[selectedShape].height" /> -->
-
+      </div>
     </div>
-    </div>
-    <v-stage :config="stageSize"  >
-    <div class="sketch-area">
-      <div ref="stageContainer"></div>
-    </div>
-  </v-stage>
+    <v-stage :config="stageSize">
+      <div class="sketch-area">
+        <div ref="stageContainer"></div>
+      </div>
+    </v-stage>
   </div>
 </template>
 
 <script>
-import Konva from 'konva';
-import axios from 'axios';
+import Konva from "konva";
+import axios from "axios";
 // import { Stage, Layer, Rect, Circle } from 'konva';
 export default {
+  created() {
+    this.clearData();
+  },
   data() {
     return {
-      layer : new Konva.Layer(),
+      layer: new Konva.Layer(),
       // stageSize: {
       //   width: 700,
       //   height: 500
@@ -71,20 +81,19 @@ export default {
       //   width: 700,
       //   height: 500,
       // },
-      FillcolorValue: 'black',
-      StrokecolorValue: 'black',
+      FillcolorValue: "black",
+      StrokecolorValue: "black",
       saveType: null,
       isFilled: false,
-      isStroke:false,
+      isStroke: false,
       isEndAfterMoved: false,
       shapes: [],
       selectedShape: null,
       selectedShapeType: null,
-      selectedShapeName: '',
+      selectedShapeName: "",
       stage: null,
       shapeIdCounter: 0,
       transformer: null,
-
     };
   },
 
@@ -109,7 +118,7 @@ export default {
     this.layer.draw();
 
     // Listen for click event to attach transformer to the shape
-    this.stage.on('click', (e) => {
+    this.stage.on("click", (e) => {
       // console.log("el3aaaaaaaaab fel click")
       const shape = e.target;
       this.selectShape(shape);
@@ -119,118 +128,107 @@ export default {
     //   console.log("el3aaaaaaaaab fel transform")
     //   this.handleTransform(e.target);
     // });
-    this.stage.on('dragmove', (e) =>{
-      console.log("el3aaaaaaaaab fel drag move")
-      this.isEndAfterMoved=false;
+    this.stage.on("dragmove", (e) => {
+      console.log("el3aaaaaaaaab fel drag move");
+      this.isEndAfterMoved = false;
     });
-    this.stage.on('dragstart', (e) =>{
-      console.log("el3aaaaaaaaab fel drag start")
+    this.stage.on("dragstart", (e) => {
+      console.log("el3aaaaaaaaab fel drag start");
     });
-    this.stage.on('dragend', (e) =>{
-      if(!this.isEndAfterMoved){
-        console.log("el3aaaaaaaaab fel drag end")
-        console.log(e.target)
-        this.handleDragEnd(e.target)
-        this.isEndAfterMoved=true;
-        
+    this.stage.on("dragend", (e) => {
+      if (!this.isEndAfterMoved) {
+        console.log("el3aaaaaaaaab fel drag end");
+        console.log(e.target);
+        this.handleDragEnd(e.target);
+        this.isEndAfterMoved = true;
       }
     });
   },
 
   methods: {
-    
     // copy logic
-    copy(){
-      console.log("the shape index copied is: "+this.selectedShape);
-      if(this.selectedShape!==null)
-        this.postCopyShape();
+    copy() {
+      console.log("the shape index copied is: " + this.selectedShape);
+      const shape = this.shapes[this.selectedShape];
+      if (this.selectedShape !== null)
+        this.postCopyShape(this.getIndexofShape(shape));
     },
 
     // undo
-    undo(){
+    undo() {
       console.log("undo logic here");
-      if(this.shapes.length>0)
-        this.postUndoShape();
-      else
-        console.log("Cannot Undo");
+      if (this.shapes.length > 0) this.postUndoShape();
+      else console.log("Cannot Undo");
     },
 
-    // redo 
-    redo(){
+    // redo
+    redo() {
       console.log("redo logic here");
       this.postRedoShape();
     },
 
-    changeColorFill(){
+    changeColorFill() {
       const shape = this.shapes[this.selectedShape];
-      if(this.isFilled){
+      if (this.isFilled) {
         shape.fill(this.FillcolorValue);
-      }else{
-        shape.fill('transparent');
+      } else {
+        shape.fill("transparent");
       }
       this.layer.draw();
-      this.postColorShape(this.selectedShape,this.shapes[this.selectedShape]);
+      this.postColorShape(this.selectedShape, this.shapes[this.selectedShape]);
     },
-    changeColorStroke(){
+    changeColorStroke() {
       const shape = this.shapes[this.selectedShape];
-      if(this.isStroke){
+      if (this.isStroke) {
         shape.stroke(this.StrokecolorValue);
-      }
-      else{
-        shape.stroke('transparent');
+      } else {
+        shape.stroke("transparent");
       }
       this.layer.draw();
-      this.postStrokeShape(this.selectedShape,this.shapes[this.selectedShape]);
-
+      this.postStrokeShape(this.selectedShape, this.shapes[this.selectedShape]);
     },
-
 
     // The save part
     saveShapes() {
       // Logic to save shapes to a file (JSON/XML)
       //console.log('Shapes saved');
-      if(this.saveType==="json")
-        this.saveJSON();
-      else if(this.saveType==="xml")
-        this.saveXML();
+      if (this.saveType === "json") this.saveJSON();
+      else if (this.saveType === "xml") this.saveXML();
     },
 
-    saveJSON()
-    {
+    saveJSON() {
       console.log("save this file as a json");
       this.getSavingJSON();
     },
-    saveXML()
-    {
+    saveXML() {
       console.log("save this file as an xml");
       this.getSavingXML();
     },
 
-
-
     // creation of the shapes from UI
-    createShape(){
-      if(this.selectedShapeType !==null)
+    createShape() {
+      if (this.selectedShapeType !== null)
         this.postCreateShape(this.selectedShapeType);
-      else
-        console.log("no shape chosen !");
+      else console.log("no shape chosen !");
     },
 
-
-    handleTransform(shape)
-    {
+    handleTransform(shape) {
       // console.log("the answer of transform event is: "+shape);
-      console.log("changes in transform happened in: "+this.getIndexofShape(shape));
-      this.postTransformShape(this.getIndexofShape(shape),shape);
-    },  
-    handleDragEnd(shape)
-    {
-      console.log("the answer of the drag event ended: "+shape)
-      console.log("the index of the given shape after change of position is: "+this.getIndexofShape(shape));
-      this.postMoveShape(this.getIndexofShape(shape),shape);
+      console.log(
+        "changes in transform happened in: " + this.getIndexofShape(shape)
+      );
+      this.postTransformShape(this.getIndexofShape(shape), shape);
     },
-    getIndexofShape(shape){
-        for (let i = 0; i < this.shapes.length; i++) {
+    handleDragEnd(shape) {
+      console.log("the answer of the drag event ended: " + shape);
+      console.log(
+        "the index of the given shape after change of position is: " +
+          this.getIndexofShape(shape)
+      );
+      this.postMoveShape(this.getIndexofShape(shape), shape);
+    },
+    getIndexofShape(shape) {
+      for (let i = 0; i < this.shapes.length; i++) {
         if (this.shapes[i].index === shape.index) {
           return i;
         }
@@ -239,63 +237,57 @@ export default {
 
     // add only one shape to the existing layer
     addShapeToLayer(shape) {
-
       this.shapes.push(shape);
       this.layer.add(shape);
-      this.selectedShape=this.shapes.length-1;
+      this.selectedShape = this.shapes.length - 1;
       this.updateTransformer(shape);
-
     },
 
-    // selecting a shape with handling of the selection of the 
+    // selecting a shape with handling of the selection of the
     selectShape(shape) {
       //console.log('selectShape');
 
       this.selectedShape = null;
 
-      if(shape.getClassName() !== 'Stage'){
-      for (let i = 0; i < this.shapes.length; i++) {
-        if (this.shapes[i].index === shape.index) {
-          this.selectedShape = i;
-          this.postSelectShape(i);
-          this.moveTotop();
-          this.selectedShape=this.shapes.length-1;
-          console.log("after: "+this.selectedShape);
-          console.log(this.shapes);
-          break;
+      if (shape.getClassName() !== "Stage") {
+        for (let i = 0; i < this.shapes.length; i++) {
+          if (this.shapes[i].index === shape.index) {
+            this.selectedShape = i;
+            this.postSelectShape(i);
+            this.moveTotop();
+            this.selectedShape = this.shapes.length - 1;
+            console.log("after: " + this.selectedShape);
+            console.log(this.shapes);
+            break;
+          }
         }
+      } else {
+        this.selectedShape = null;
       }
-    }
-    else{
-      this.selectedShape = null;
-    }
     },
 
-    
     moveTotop() {
       //console.log('moveToTop');
       // //console.log(this.selectedShape);
-      const shape=this.shapes[this.selectedShape];
+      const shape = this.shapes[this.selectedShape];
       this.shapes.splice(this.selectedShape, 1);
       this.shapes.push(shape);
       this.loadshapes();
     },
 
     updateTransformer(shape) {
-      if(this.selectedShape !== null) {
+      if (this.selectedShape !== null) {
         // console.log("ana dakhalt fel case beta3et msh ely heya bta3et el null")
 
-        this.isFilled = shape.fill() !== 'transparent';
+        this.isFilled = shape.fill() !== "transparent";
         // console.log("fill of the shape is: "+shape.fill())
         // console.log("is filled is: "+this.isFilled)
-        
-          if(!this.isFilled)
-            this.FillcolorValue= shape.fill();
-          // console.log("stroke of the shape is: "+shape.stroke())
-          // console.log("is Stroked is: "+this.isStroke)
-          this.isStroke=shape.stroke() !== 'transparent';
-          if(this.stroke)
-            this.StrokecolorValue= shape.stroke();
+
+        if (!this.isFilled) this.FillcolorValue = shape.fill();
+        // console.log("stroke of the shape is: "+shape.stroke())
+        // console.log("is Stroked is: "+this.isStroke)
+        this.isStroke = shape.stroke() !== "transparent";
+        if (this.stroke) this.StrokecolorValue = shape.stroke();
 
         this.transformer.attachTo(this.shapes[this.selectedShape]);
         //console.log(this.transformer);
@@ -303,14 +295,23 @@ export default {
         this.stage.batchDraw();
         // console.log("haneb3at lel backend");
         this.handleTransform(shape);
-      }
-      else{
-        console.log("ana dakhalt fel case beta3et elnull")
+      } else {
+        console.log("ana dakhalt fel case beta3et elnull");
         this.transformer.detach();
         this.stage.batchDraw();
+        this.handleTransform(this.shapes[this.shapes.length - 1]);
       }
     },
-
+    async clearData() {
+      try {
+        // Make a GET request to the '/clear' endpoint
+        const response = await axios.get("http://localhost:8000/api/clear");
+        // Handle the response as needed
+      } catch (error) {
+        // Handle errors
+        console.error("Error clearing data:", error);
+      }
+    },
     previewShapes() {
       this.layer = new Konva.Layer();
       this.stage.add(this.layer);
@@ -318,16 +319,16 @@ export default {
       this.layer.add(this.transformer);
       // this.layer = this.stage.findOne('Layer');
       // Loop through the shapes and add them to the layer for preview
-      this.shapes.forEach(shape => {
+      this.shapes.forEach((shape) => {
         this.layer.add(shape);
         this.stage.draw();
       });
 
       // Update the layer
       this.layer.batchDraw();
-      
+
       //console.log("7amdela 3al salamaaaa ana khalast teba3a mn preview shapes");
-      this.selectedShape=null;
+      this.selectedShape = null;
     },
 
     deleteShape() {
@@ -350,8 +351,7 @@ export default {
       this.transformer.detach();
       this.previewShapes();
     },
-    loadshapes()
-    {
+    loadshapes() {
       this.layer.removeChildren();
       this.transformer.detach();
       this.previewShapes();
@@ -361,63 +361,53 @@ export default {
       this.layer.add(this.transformer);
 
       // Loop through the shapes and add them to the layer for preview
-      this.shapes.forEach(shape => {
+      this.shapes.forEach((shape) => {
         this.layer.add(shape);
         this.stage.draw();
       });
 
       // Update the layer
       this.layer.batchDraw();
-      
+
       //console.log("7amdela 3al salamaaaa ana khalast teba3a mn preview shapes");
-      this.selectedShape=null;
+      this.selectedShape = null;
     },
 
+    // The load part from a file
+    load(event) {
+      const file = event.target.files[0];
+      const fileType = file.name.split(".").pop();
+      console.log("file name is " + file.name);
+      console.log("file type is: " + fileType);
 
-  // The load part from a file
-  load(event) {
-    const file = event.target.files[0];
-    const fileType = file.name.split('.').pop();
-    console.log("file name is "+file.name);
-    console.log("file type is: "+fileType);
+      // Logic to load shapes from a file (JSON/XML)
+      //console.log('Shapes loaded');
+      if (/*this where we now that the file is JSON*/ fileType === "json") {
+        this.loadJSONfromFile(file);
+      } else if (/*This file is XML file*/ fileType === "xml") {
+        this.loadXMLfromFile(file);
+      } else console.log("Error, not readable file");
+    },
 
-    // Logic to load shapes from a file (JSON/XML)
-    //console.log('Shapes loaded');
-    if(/*this where we now that the file is JSON*/ fileType==='json')
-    {
-      this.loadJSONfromFile(file);
-    }
-    else if(/*This file is XML file*/ fileType==='xml')
-    {
-      this.loadXMLfromFile(file);
-    }
-    else
-      console.log("Error, not readable file");
-  },
+    loadJSONfromFile(file) {
+      this.postLoadingJSON(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const content = e.target.result;
+        console.log("content of page is: " + content);
+        console.log("content of the file is " + content);
+        const ParesedJSON = JSON.parse(content);
+        this.loadFromLoad(ParesedJSON);
+      };
+      reader.readAsText(file);
+    },
+    loadXMLfromFile(file) {
+      console.log("the load XML function here");
+      this.postLoadingXML(file);
+    },
 
-  loadJSONfromFile(file)
-  {
-    this.postLoadingJSON(file);
-    const reader = new FileReader();
-    reader.onload=(e)=>{
-      const content = e.target.result;
-      console.log("content of page is: "+content);
-      console.log("content of the file is "+content);
-      const ParesedJSON = JSON.parse(content);
-      this.loadFromLoad(ParesedJSON);
-    }
-    reader.readAsText(file);
-  
-  },
-  loadXMLfromFile(file){
-    console.log("the load XML function here");
-    this.postLoadingXML(file);
-  },
-
-  // this function is used to load a new layer with shapes from a JSON file
-  loadFromLoad(ParesedJSON)
-  {
-    
+    // this function is used to load a new layer with shapes from a JSON file
+    loadFromLoad(ParesedJSON) {
       console.log(ParesedJSON);
       this.layer.removeChildren();
       this.transformer.detach();
@@ -426,452 +416,423 @@ export default {
       this.stage.add(this.layer);
       this.transformer = new Konva.Transformer();
       this.layer.add(this.transformer);
-      if(Array.isArray(ParesedJSON) && ParesedJSON.length === 0)
+      if (Array.isArray(ParesedJSON) && ParesedJSON.length === 0)
         console.log("There is nothing to draw");
-      else{
-      ParesedJSON.forEach(jsonShape =>{
-        this.loadOneShape(jsonShape);
-      });
+      else {
+        ParesedJSON.forEach((jsonShape) => {
+          this.loadOneShape(jsonShape);
+        });
       }
       // this.shapes.forEach(shape => {
       //   this.layer.add(shape);
       //   this.stage.draw();
       // });
+    },
 
-  },
+    // load only one shape on the existing layer
+    loadOneShape(jsonShape) {
+      console.log("went here in loading one shape with " + jsonShape);
 
-  // load only one shape on the existing layer
-  loadOneShape(jsonShape)
-  {
-    console.log("went here in loading one shape with "+jsonShape);
+      console.log(jsonShape);
 
-  
-    
-    console.log(jsonShape)
-      
-    // const jsonData = JSON.parse(json);
-    console.log("the json data are:");
-    // console.log(jsonData);
-    const shape=this.createShapeOnLoad(jsonShape);
-    if(shape!==null)
-    {
-      this.addShapeToLayer(shape);
-    }
-
-  },
-  // trying load things
-  createShapeOnLoad(attr) {
-      let shape;
-      console.log("attr before going to the if condition "+attr);
-      console.log("")
-      if (attr.name === 'line') {
-        shape=this.addLineOnLoad(attr);
-      } else if (attr.name === 'square') {
-        shape=this.addSquareOnLoad(attr);
-      } else if (attr.name === 'rectangle') {
-        shape=this.addRectangleOnLoad(attr);
-      } else if (attr.name === 'ellipse') {
-        shape=this.addEllipseOnLoad(attr);
-      } else if (attr.name === 'circle') {
-        shape=this.addCircleOnLoad(attr);
-      } else if (attr.name === 'triangle') {
-        shape=this.addTriangleOnLoad(attr);
-      } else if (attr.name === 'star') {
-        shape=this.addStarOnLoad(attr);
+      // const jsonData = JSON.parse(json);
+      console.log("the json data are:");
+      // console.log(jsonData);
+      const shape = this.createShapeOnLoad(jsonShape);
+      if (shape !== null) {
+        this.addShapeToLayer(shape);
       }
-      else
-      {
-        shape=null;
+    },
+    // trying load things
+    createShapeOnLoad(attr) {
+      let shape;
+      console.log("attr before going to the if condition " + attr);
+      console.log("attr name is: " + attr.name);
+      if (attr.name === "Line") {
+        shape = this.addLineOnLoad(attr);
+      } else if (attr.name === "Square") {
+        shape = this.addSquareOnLoad(attr);
+      } else if (attr.name === "Rectangle") {
+        shape = this.addRectangleOnLoad(attr);
+      } else if (attr.name === "Ellipse") {
+        shape = this.addEllipseOnLoad(attr);
+      } else if (attr.name === "Circle") {
+        shape = this.addCircleOnLoad(attr);
+      } else if (attr.name === "Triangle") {
+        shape = this.addTriangleOnLoad(attr);
+      } else if (attr.name === "Star") {
+        shape = this.addStarOnLoad(attr);
+      } else {
+        shape = null;
         console.log("no shape chosen !");
       }
       console.log("shape is");
       console.log(shape);
       return shape;
-  },
-  addCircleOnLoad(attr) {
-    const circ = new Konva.Circle({
-      name: attr.name,
-      x: attr.x,
-      y: attr.y,
-      rotation:attr.rotation,
-      fill: attr.color,
-      scaleX: attr.scaleX,
-      scaleY:attr.scaleY,
-      stroke: attr.stroke,
-      radius: attr.radius,
-      draggable: true,
-    });
-
-    return circ;
-  },
-  addRectangleOnLoad(attr) {
-    const rect = new Konva.Rect({
-      name: attr.name,
-      x: attr.x,
-      y: attr.y,
-      rotation:attr.rotation,
-      fill: attr.color,
-      scaleX: attr.scaleX,
-      scaleY:attr.scaleY,
-      stroke: attr.stroke,
-      height: attr.height,
-      width: attr.width,
-      draggable: true,
-
-    });
-
-    return rect;
-  },
-  addTriangleOnLoad(attr) {
-    console.log("I'm adding a triangel with attributes of: "+attr);
-    const triangle = new Konva.RegularPolygon({
-      name: attr.name,
-      x: attr.x,
-      y: attr.y,
-      rotation:attr.rotation,
-      fill: attr.color,
-      scaleX: attr.scaleX,
-      scaleY:attr.scaleY,
-      stroke: attr.stroke,
-      sides: attr.sides,
-      radius: attr.radius,
-      draggable: true,
-    });
-    return triangle;
-
-  },
-  addStarOnLoad(attr) {
-    const star = new Konva.Star({
-      attr,
-      draggable: true,
-    });
-
-    return star;
-  },
-
-  addEllipseOnLoad(attr) {
-    const ellipse = new Konva.Ellipse({
-      name: attr.name,
-      x: attr.x,
-      y: attr.y,
-      rotation:attr.rotation,
-      fill: attr.color,
-      scaleX: attr.scaleX,
-      scaleY: attr.scaleY,
-      stroke: attr.stroke,
-      radiusX:attr.radiusX,
-      radiusY: attr.radiusY,
-      draggable: true,
-    });
-    return ellipse ;
-  },
-  addSquareOnLoad(attr) {
-    const square = new Konva.Rect({
-      name: attr.name,
-      x: attr.x,
-      y: attr.y,
-      rotation:attr.rotation,
-      fill: attr.color,
-      scaleX: attr.scaleX,
-      scaleY:attr.scaleY,
-      stroke: attr.stroke,
-      height: attr.height,
-      width: attr.width,
-      draggable: true,
-    });
-    return square;
-  },
-  addLineOnLoad(attr) {
-    const line = new Konva.Line({
-      name: attr.name,
-      x: attr.x,
-      y: attr.y,
-      rotation:attr.rotation,
-      scaleX: attr.scaleX,
-      scaleY:attr.scaleY,
-      stroke: attr.stroke,
-      points: attr.coordinates,
-      draggable: true,
-    });
-    return line;
-
-  },
-
-  // api handling
-  async postCreateShape(shape)
-  {
-    try{
-      const response = await axios.post('http://localhost:8080/api/create' , {
-        params: {
-          shapeType: shape
-        }
+    },
+    addCircleOnLoad(attr) {
+      const circ = new Konva.Circle({
+        name: attr.name,
+        x: attr.x,
+        y: attr.y,
+        rotation: attr.rotation,
+        fill: attr.color,
+        scaleX: attr.scaleX,
+        scaleY: attr.scaleY,
+        stroke: attr.stroke,
+        radius: attr.radius,
+        draggable: true,
       });
-      this.loadOneShape(response.data);
-    }
-    catch(error)
-    {
-      console.log("Error in post Create: "+error);
-    }
-  },
-  async postCopyShape(index)
-  {
-    try{
-      const response = await axios.post('http://localhost:8080/api/copy', {
-        params: {
-          shapeIndex: index
-        }
+
+      return circ;
+    },
+    addRectangleOnLoad(attr) {
+      const rect = new Konva.Rect({
+        name: attr.name,
+        x: attr.x,
+        y: attr.y,
+        rotation: attr.rotation,
+        fill: attr.color,
+        scaleX: attr.scaleX,
+        scaleY: attr.scaleY,
+        stroke: attr.stroke,
+        height: attr.height,
+        width: attr.width,
+        draggable: true,
       });
-      this.loadOneShape(response.data);
-    }
-    catch(error)
-    {
-      console.log("Error in post in Copy: "+error);
-    }
-  },
-  async postUndoShape()
-  {
-    try{
-      const response = await axios.post('http://localhost:8080/api/endpointName');
-     
-      this.loadFromLoad(response.data);
-    }
-    catch(error)
-    {
-      console.log("Error in post in Undo: "+error);
-    }
-  },
-  async postRedoShape()
-  {
-    try{
-      const response = await axios.post('http://localhost:8080/api/endpointName');
-      this.loadFromLoad(response.data);
-    }
-    catch(error)
-    {
-      console.log("Error in post in Redo: "+error);
-    }
-  },
-  async getSavingXML ()
-  {
-    try{
-      await axios.get('http://localhost:8080/api/download/XML');
-    }
-    catch{
-      console.log("Error in get while saving XML: "+error);
 
-    }
-  },
-  async getSavingJSON()
-  {
-    try{
-      await axios.get('http://localhost:8080/api/download/JSON');
-    }
-    catch{
-      console.log("Error in get while saving JSON: "+error);
-    }
-  },
-  async postSavingXML(file)
-  {
-    try{
-      const response = await axios.post('http://localhost:8080/api/upload/XML', {
-        params: {
-          file:  file,
-        }
+      return rect;
+    },
+    addTriangleOnLoad(attr) {
+      console.log("I'm adding a triangel with attributes of: " + attr);
+      const triangle = new Konva.RegularPolygon({
+        name: attr.name,
+        x: attr.x,
+        y: attr.y,
+        rotation: attr.rotation,
+        fill: attr.color,
+        scaleX: attr.scaleX,
+        scaleY: attr.scaleY,
+        stroke: attr.stroke,
+        sides: attr.sides,
+        radius: attr.radius,
+        draggable: true,
       });
-      this.loadFromLoad(response.data)
-    }
-    catch(error)
-    {
-      console.log("Error in post in saving XML: "+error);
-    }
-  },
-  async postSavingJSON(file)
-  {
-    try{
-      const response = await axios.post('http://localhost:8080/api/upload/JSON', {
-        params: {
-          file:  file,
-        }
+      return triangle;
+    },
+    addStarOnLoad(attr) {
+      const star = new Konva.Star({
+        attr,
+        draggable: true,
       });
-    }
-    catch(error)
-    {
-      console.log("Error in post in saving JSON: "+error);
-    }
-  },
-  async postLoadingXML(file)
-  {
-    try{
-      const response = await axios.post('http://localhost:8080/api/upload/XML', {
 
-        params: {
-          file:  file,
-        }
+      return star;
+    },
+
+    addEllipseOnLoad(attr) {
+      const ellipse = new Konva.Ellipse({
+        name: attr.name,
+        x: attr.x,
+        y: attr.y,
+        rotation: attr.rotation,
+        fill: attr.color,
+        scaleX: attr.scaleX,
+        scaleY: attr.scaleY,
+        stroke: attr.stroke,
+        radiusX: attr.radiusX,
+        radiusY: attr.radiusY,
+        draggable: true,
       });
-      this.loadOneShape(response.data);
-    }
-    catch(error)
-    {
-      console.log("Error in post in uploading XML: "+error);
-    }
-  },
-  async postLoadingJSON(file)
-  {
-    try{
-      const response = await axios.post('http://localhost:8080/api/upload/JSON', {
-
-        params: {
-          file:  file,
-        }
+      return ellipse;
+    },
+    addSquareOnLoad(attr) {
+      const square = new Konva.Rect({
+        name: attr.name,
+        x: attr.x,
+        y: attr.y,
+        rotation: attr.rotation,
+        fill: attr.color,
+        scaleX: attr.scaleX,
+        scaleY: attr.scaleY,
+        stroke: attr.stroke,
+        height: attr.height,
+        width: attr.width,
+        draggable: true,
       });
-    }
-    catch(error)
-    {
-      console.log("Error in post in uploading JSON: "+error);
-    }
-  },
-  async postRemoveShape(index)
-  {
-    try{
-      const response = await axios.post('http://localhost:8080/api/remove', {
-        params: {
-          shapeIndex: index
-        }
+      return square;
+    },
+    addLineOnLoad(attr) {
+      const line = new Konva.Line({
+        name: attr.name,
+        x: attr.x,
+        y: attr.y,
+        rotation: attr.rotation,
+        scaleX: attr.scaleX,
+        scaleY: attr.scaleY,
+        stroke: attr.stroke,
+        points: attr.coordinates,
+        draggable: true,
       });
-    }
-    catch(error)
-    {
-      console.log("Error in post in remove: "+error);
-    }
-  },
-  async postMoveShape(index,shape)
-  {
-    try{
-      const response = await axios.post('http://localhost:8080/api/move', {
+      return line;
+    },
 
-        params: {
-          x:  shape.x(),
-          y:  shape.y(),
-          id: index
+    // api handling
+    async postCreateShape(shape) {
+      try {
+        const response = await axios.post(
+          `http://localhost:8000/api/create?shapeType=${shape}`
+        );
+        this.loadOneShape(response.data);
+      } catch (error) {
+        console.log("Error in post Create: " + error);
+      }
+    },
+    async postCopyShape(index) {
+      console.log("the index of the shape copied is: " + index);
 
-        }
-      });
-      this.loadOneShape(response.data);
-    }
-    catch(error)
-    {
-      console.log("Error in post in move: "+error);
-    }
-  },
-  async postTransformShape(index,shape)
-  {
-    try{
-      const response = await axios.post('http://localhost:8080/api/transform', {
+      try {
+        const response = await axios.post(
+          `http://localhost:8000/api/copy?shapeIndex=` + index
+        );
+        console.log("the response of copy is: " + response.data);
+        this.loadOneShape(response.data);
+      } catch (error) {
+        console.log("Error in post in Copy: " + error);
+      }
+    },
+    async postUndoShape() {
+      try {
+        const response = await axios.post("http://localhost:8000/api/undo");
 
-        params: {
+        this.loadFromLoad(response.data);
+      } catch (error) {
+        console.log("Error in post in Undo: " + error);
+      }
+    },
+    async postRedoShape() {
+      try {
+        const response = await axios.post("http://localhost:8000/api/redo");
+        this.loadFromLoad(response.data);
+      } catch (error) {
+        console.log("Error in post in Redo: " + error);
+      }
+    },
+    async getSavingXML() {
+      try {
+        // Make a GET request to download the XML file
+        const response = await axios.get(
+          "http://localhost:8000/api/download/xml",
+          { responseType: "blob" }
+        );
 
-          id: index,
-          scaleX:  shape.scaleX(),
-          scaley:  shape.scaleY(),
-          rotation: shape.rotation()
+        // Create a Blob from the response data
+        const blob = new Blob([response.data], {
+          type: response.headers["content-type"],
+        });
 
-        }
-      });
-    }
-    catch(error)
-    {
-      console.log("Error in post in Transform: "+error);
-    }
-  },
-  async postColorShape(index,shape)
-  {
-    try{
-      const response = await axios.post('http://localhost:8080/api/color', {
+        // Create a link and trigger a click to download the file
+        const downloadLink = document.createElement("a");
+        downloadLink.href = window.URL.createObjectURL(blob);
+        downloadLink.download = "downloadedFile.xml"; // Specify the desired file name
 
-        params: {
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      } catch (error) {
+        // Handle errors
+        console.error("Error downloading XML file:", error);
+      }
+    },
+    async getSavingJSON() {
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/api/download/json",
+          { responseType: "blob" }
+        );
 
-          id: index,
-          color: shape.fill()
+        // Create a Blob from the response data
+        const blob = new Blob([response.data], {
+          type: response.headers["content-type"],
+        });
 
-        }
-      });
-    }
-    catch(error)
-    {
-      console.log("Error in post in Color: "+error);
-    }
-  },
-  async postStrokeShape(index,shape)
-  {
-    try{
-      const response = await axios.post('http://localhost:8080/api/stroke', {
+        // Create a link and trigger a click to download the file
+        const downloadLink = document.createElement("a");
+        downloadLink.href = window.URL.createObjectURL(blob);
+        downloadLink.download = "downloadedFile.json"; // Specify the desired file name
 
-        params: {
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      } catch (error) {
+        // Handle errors
+        console.error("Error downloading JSON file:", error);
+      }
+    },
+    // async postSavingXML(file)
+    // {
+    //   try{
+    //     const response = await axios.post('http://localhost:8000/api/upload/xml', {
+    //       params: {
+    //         file:  file,
+    //       }
+    //     });
+    //     this.loadFromLoad(response.data)
+    //   }
+    //   catch(error)
+    //   {
+    //     console.log("Error in post in saving XML: "+error);
+    //   }
+    // },
+    // async postSavingJSON(file)
+    // {
+    //   try{
+    //     const response = await axios.post('http://localhost:8000/api/upload/json', {
+    //       params: {
+    //         file:  file,
+    //       }
+    //     });
+    //   }
+    //   catch(error)
+    //   {
+    //     console.log("Error in post in saving JSON: "+error);
+    //   }
+    // },
+    async postLoadingXML(file) {
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
 
-          id: index,
-          stroke: shape.stroke()
+        const response = await axios.post(
+          "http://localhost:8000/api/upload/xml",
+          formData
+        );
+        this.loadFromLoad(response.data);
+      } catch (error) {
+        console.log("Error in post in uploading XML: " + error);
+      }
+    },
+    async postLoadingJSON(file) {
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
 
-        }
-      });
-    }
-    catch(error)
-    {
-      console.log("Error in post in Stroke: "+error);
-    }
-  },
-  async postSelectShape(index)
-  {
-    try{
-      const response = await axios.post('http://localhost:8080/api/select', {
+        const response = await axios.post(
+          "http://localhost:8000/api/upload/json",
+          formData
+        );
+      } catch (error) {
+        console.log("Error in post in uploading JSON: " + error);
+      }
+    },
+    async postRemoveShape(index) {
+      try {
+        const response = await axios.post(
+          `http://localhost:8000/api/remove?shapeIndex=` + index
+        );
+      } catch (error) {
+        console.log("Error in post in remove: " + error);
+      }
+    },
+    async postMoveShape(index, shape) {
+      console.log("the index of the shape moved is: " + index);
+      console.log("the x of the shape moved is: " + shape.x());
+      console.log("the y of the shape moved is: " + shape.y());
+      try {
+        const response = await axios.post(
+          `http://localhost:8000/api/move?id=${index}&x=${Math.round(
+            shape.x()
+          )}&y=${Math.round(shape.y())}`
+        );
+        this.loadOneShape(response.data);
+      } catch (error) {
+        console.log("Error in post in move: " + error);
+      }
+    },
+    async postTransformShape(index, shape) {
+      try {
+        console.log("the scale x is: " + shape.scaleX());
+        console.log("the scale y is: " + shape.scaleY());
+        console.log("the rotation is: " + shape.rotation());
+        const response = await axios.post(
+          `http://localhost:8000/api/transform?id=${index}&scaleX=${shape.scaleX()}&scaleY=${shape.scaleY()}&rotation=${shape.rotation()}`
+        );
 
-        params: {
+        // Handle the response as needed
+      } catch (error) {
+        // Handle errors
+        console.error("Error transforming shape:", error);
+      }
+    },
 
-          id: index,
+    async postColorShape(index, shape) {
+      try {
+        const fillColor = shape.fill();
+        console.log("the fill is: " + fillColor);
 
-        }
-      });
-    }
-    catch(error)
-    {
-      console.log("Error in post in Select: "+error);
-    }
-  },
+        const encodedFillColor = encodeURIComponent(fillColor);
+        const response = await axios.post(
+          `http://localhost:8000/api/color?id=${index}&color=${encodedFillColor}`
+        );
+      } catch (error) {
+        console.log("Error in post in Color: " + error);
+      }
+    },
+    async postStrokeShape(index, shape) {
+      try {
+        const strokeColor = shape.stroke(); // Assuming shape.stroke() returns a hex color code like #c00000
+        console.log("the stroke is: " + strokeColor);
 
-  // The creation of the shapes
-  createshape(){
-    if(this.selectedShapeType !==null)
-      this.postCreateShape(this.selectedShapeType);
-  },
-  
+        const encodedStrokeColor = encodeURIComponent(strokeColor);
+
+        const response = await axios.post(
+          `http://localhost:8000/api/stroke?id=${index}&stroke=${encodedStrokeColor}`
+        );
+        // Handle the response as needed
+      } catch (error) {
+        // Handle errors
+        console.error("Error updating stroke:", error);
+      }
+    },
+    async postSelectShape(index) {
+      try {
+        const response = await axios.post(
+          `http://localhost:8000/api/select?id=${index}`
+        );
+      } catch (error) {
+        console.log("Error in post in Select: " + error);
+      }
+    },
+
+    // The creation of the shapes
+    createshape() {
+      if (this.selectedShapeType !== null)
+        this.postCreateShape(this.selectedShapeType);
+    },
 
     createShapeBasic() {
       let shape;
-      if (this.selectedShapeType === 'line') {
-        shape=this.addLine();
-      } else if (this.selectedShapeType === 'square') {
-        shape=this.addSquare();
-      } else if (this.selectedShapeType === 'rectangle') {
-        shape=this.addRectangle();
-      } else if (this.selectedShapeType === 'ellipse') {
-        shape=this.addEllipse();
-      } else if (this.selectedShapeType === 'circle') {
-        shape=this.addCircle();
-      } else if (this.selectedShapeType === 'triangle') {
-        shape=this.addTriangle();
-      } else if (this.selectedShapeType === 'star') {
-        shape=this.addStar();
-      }
-      else
-      {
+      if (this.selectedShapeType === "line") {
+        shape = this.addLine();
+      } else if (this.selectedShapeType === "square") {
+        shape = this.addSquare();
+      } else if (this.selectedShapeType === "rectangle") {
+        shape = this.addRectangle();
+      } else if (this.selectedShapeType === "ellipse") {
+        shape = this.addEllipse();
+      } else if (this.selectedShapeType === "circle") {
+        shape = this.addCircle();
+      } else if (this.selectedShapeType === "triangle") {
+        shape = this.addTriangle();
+      } else if (this.selectedShapeType === "star") {
+        shape = this.addStar();
+      } else {
         console.log("no shape chosen !");
         return;
       }
       this.addShapeToLayer(shape);
     },
-},
-
-}
-
+  },
+};
 </script>
 
 <style>

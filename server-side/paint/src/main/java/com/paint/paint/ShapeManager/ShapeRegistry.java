@@ -1,6 +1,7 @@
 package com.paint.paint.ShapeManager;
 import com.paint.paint.Shapes.Shape;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ShapeRegistry {
     private ArrayList<Shape> cache = new ArrayList<Shape>();
@@ -41,5 +42,9 @@ public class ShapeRegistry {
 
     public ArrayList<Shape> getCache(){
         return cache;
+    }
+
+    public void setCache(List<Shape> shapes) {
+        cache = new ArrayList<Shape>(shapes);
     }
 }
