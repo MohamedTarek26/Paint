@@ -6,7 +6,7 @@ public class Circle extends Shape {
 
     public Circle() {
         this.name = "Circle";
-        this.setcolor("Green");
+        this.setcolor("#4dac26");
     }
 
     public Circle(Circle target) {
@@ -14,7 +14,7 @@ public class Circle extends Shape {
         if (target != null) {
             this.radius = target.radius;
             this.name = "Circle";
-            this.setcolor("Green");
+            this.setcolor("#4dac26");
         }
     }
 
