@@ -1,0 +1,43 @@
+
+[
+{
+        
+        "name": "triangle",
+        "x": 300,
+        "y": 300,
+        "rotation": 0,
+        "scaleX":1,
+        "scaleY":1,
+        "stroke":"transparent",
+        "sides": 3,
+        "radius": 150,
+        "color": "Yellow"
+        
+},
+{
+	"name": "triangle",
+        "x": 300,
+        "y": 300,
+        "rotation": 0,
+        "scaleX":1,
+        "scaleY":1,
+        "stroke":"Transparent",
+        "sides": 3,
+        "radius": 90,
+        "color": "red"
+},
+
+{
+	
+        "name": "square",
+        "x": 300,
+        "y": 300,
+        "rotation": 0,
+        "scaleX":1,
+        "scaleY":1,
+        "stroke":"Red",
+        "height": 100,
+        "width": 100,
+        "color": "Transparent"
+}
+]
