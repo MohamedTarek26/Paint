@@ -884,7 +884,7 @@ export default {
 
 body {
   font-family: sans-serif;
-  background-color: #4d4d4d;
+  background-color: #038e87;
 }
 
 /* Container & Layout */
@@ -908,7 +908,7 @@ body {
   top: 50px;
   left: 68dvb;
   width: auto;
-  background-color: #8d6f6f;
+  background-color: #66cc88;
   padding: 10px 20px;
   border-radius: 50px;
   /* margin-bottom: 20px; */
@@ -954,7 +954,7 @@ body {
   left: 50px;
   width: 200px;
   height: 71.5dvb;
-  background-color: #8d6f6f;
+  background-color: #66cc88;
   border-radius: 20px;
   padding: 20px;
   margin: auto;
@@ -1019,7 +1019,7 @@ body {
   right: 100px;
   width: 200px;
   height: 71.5dvb;
-  background-color: #8d6f6f;
+  background-color: #66cc88;
   border-radius: 20px;
   padding: 20px;
   text-align: center;
