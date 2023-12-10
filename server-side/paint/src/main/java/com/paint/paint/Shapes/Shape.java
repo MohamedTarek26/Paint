@@ -90,6 +90,10 @@ public abstract class Shape {
             this.x = target.x;
             this.y = target.y;
             this.color = target.color;
+            this.scaleX = target.scaleX;
+            this.scaleY = target.scaleY;
+            this.rotation = target.rotation;
+            this.Stroke = target.Stroke;
         }
     }
 

@@ -6,11 +6,13 @@ public class Line extends Shape{
 
         this.name = "Line";
         this.coordinates = new int[]{100, 50, 200, 50};
+        this.setStroke("Black");
     }
     public Line(Line target) {
         super(target);
         this.name = "Line";
         this.coordinates = new int[]{100, 50, 200, 50};
+        this.setStroke("Black");
     }
     @Override
     public Shape clone() {
