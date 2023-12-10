@@ -1,66 +1,72 @@
 <template>
-  <div>
-    <!-- Taskbar -->
-    <div class="taskbar">
-      <button @click="saveShapes">Save as</button>
-      <select v-model="saveType">
+  <div class="container">
+    <!-- Top bar -->
+    <div class="top-bar">
+      <button @click="saveShapes" class="top-bar-button">Save as</button>
+      <select v-model="saveType" class="top-bar-select">
         <option value="json">JSON File</option>
         <option value="xml">XML file</option>
       </select>
-      <button @click="loadOneShape">Load one shape</button>
-      <label>Load</label>
-      <input type="file" @change="load" />
-      <button @click="createShape">Add Shape</button>
-      <select v-model="selectedShapeType">
-        <option value="line">Line</option>
-        <option value="square">Square</option>
-        <option value="rectangle">Rectangle</option>
-        <option value="circle">Circle</option>
-        <option value="ellipse">Ellipse</option>
-        <option value="triangle">Triangle</option>
-        <option value="star">Star</option>
-      </select>
-      <button @click="undo">Undo</button>
-      <button @click="redo">Redo</button>
-      <button @click="deleteShape" v-if="selectedShape !== null">Delete</button>
-      <div v-if="selectedShape !== null">
-        <label style="font: bold">Color:</label>
-        <!-- <label>X:</label>
-        <input type="x_select" v-model="xValue" @change="changex" />
-        <label>Y:</label>
-        <input type="number" v-model="yValue" @change="changey" />  -->
-        <label style="font: 300">Fill:</label>
-        <input type="checkbox" v-model="isFilled" @change="changeColorFill" />
-        <input
-          type="color"
-          v-if="isFilled"
-          v-model="FillcolorValue"
-          @change="changeColorFill"
-        />
-
-        <label style="font: 300">Stroke:</label>
-        <input type="checkbox" v-model="isStroke" @change="changeColorStroke" />
-        <input
-          type="color"
-          v-if="isStroke"
-          v-model="StrokecolorValue"
-          @change="changeColorStroke"
-        />
-        <button @click="copy">Copy</button>
-
-        <!-- <label>Width:</label>
-        <input type="number" v-model="shapes[selectedShape].width" />
-        <label>Height:</label> 
-        <input type="number" v-model="shapes[selectedShape].height" /> -->
-      </div>
+      <label class="top-bar-label">Load</label>
+      <input type="file" @change="load" class="top-bar-input" />
     </div>
+
+    <!-- Left toolbar -->
+    <div class="toolbar-left">
+      <p class="toolbar-title">Shapes</p>
+      <button @click="createShape('line')" class="shape-button">
+        <i class="fas fa-grip-lines"></i> Line
+      </button>
+      <button @click="createShape('square')" class="shape-button">
+        <i class="fas fa-square"></i> Square
+      </button>
+      <button @click="createShape('rectangle')" class="shape-button">
+        <i class="fas fa-rectangle-wide"></i> Rectangle
+      </button>
+      <button @click="createShape('circle')" class="shape-button">
+        <i class="fas fa-circle"></i> Circle
+      </button>
+      <button @click="createShape('ellipse')" class="shape-button">
+        <i class="fas fa-ellipsis-h"></i> Ellipse
+      </button>
+      <button @click="createShape('triangle')" class="shape-button">
+        <i class="fas fa-play"></i> Triangle
+      </button>
+      <!-- Add other shape buttons -->
+    </div>
+
+    <!-- Sketch area -->
     <v-stage :config="stageSize">
       <div class="sketch-area">
+        <!-- Sketch area content -->
         <div ref="stageContainer"></div>
       </div>
     </v-stage>
+
+    <!-- Right toolbar -->
+    <div class="toolbar-right">
+      <div class="right-toolbar-buttons">
+        <button @click="undo" class="toolbar-button">Undo</button>
+        <button @click="redo" class="toolbar-button">Redo</button>
+        <button @click="deleteShape" v-if="selectedShape !== null" class="toolbar-button">Delete</button>
+      </div>
+      <div v-if="selectedShape !== null" class="shape-options">
+        <label class="options-label">Color:</label>
+        <div class="color-options">
+          <label class="fill-label">Fill:</label>
+          <input type="checkbox" v-model="isFilled" @change="changeColorFill" />
+          <input type="color" v-if="isFilled" v-model="FillColorValue" @change="changeColorFill" />
+
+          <label class="stroke-label">Stroke:</label>
+          <input type="checkbox" v-model="isStroke" @change="changeColorStroke" />
+          <input type="color" v-if="isStroke" v-model="StrokeColorValue" @change="changeColorStroke" />
+        </div>
+        <button @click="copy" class="toolbar-button">Copy</button>
+      </div>
+    </div>
   </div>
 </template>
+
 
 <script>
 import Konva from "konva";
@@ -206,7 +212,8 @@ export default {
     },
 
     // creation of the shapes from UI
-    createShape() {
+    createShape(shape) {
+      this.selectedShapeType = shape;
       if (this.selectedShapeType !== null)
         this.postCreateShape(this.selectedShapeType);
       else console.log("no shape chosen !");
@@ -667,6 +674,7 @@ export default {
         // Handle errors
         console.error("Error downloading JSON file:", error);
       }
+
     },
     // async postSavingXML(file)
     // {
@@ -739,9 +747,9 @@ export default {
       console.log("the y of the shape moved is: " + shape.y());
       try {
         const response = await axios.post(
-          `http://localhost:8000/api/move?id=${index}&x=${Math.round(
+          `http://localhost:8000/api/move?id=${index}&x=${(
             shape.x()
-          )}&y=${Math.round(shape.y())}`
+          )}&y=${shape.y()}`
         );
         this.loadOneShape(response.data);
       } catch (error) {
@@ -754,7 +762,7 @@ export default {
         console.log("the scale y is: " + shape.scaleY());
         console.log("the rotation is: " + shape.rotation());
         const response = await axios.post(
-          `http://localhost:8000/api/transform?id=${index}&scaleX=${shape.scaleX()}&scaleY=${shape.scaleY()}&rotation=${shape.rotation()}`
+          `http://localhost:8000/api/transform?id=${index}&scaleX=${shape.scaleX()}&scaleY=${shape.scaleY()}&rotation=${shape.rotation()}&x=${shape.x()}&y=${shape.y()}`
         );
 
         // Handle the response as needed
@@ -836,23 +844,143 @@ export default {
 </script>
 
 <style>
-.taskbar {
+/* Styles for the top bar */
+.top-bar {
   display: flex;
   align-items: center;
-  justify-content: space-between center;
-  padding: 10px;
-  background-color: #f0f0f0;
-  border-bottom: 1px solid #ccc;
+  background-color: #f2f2f2;
+  padding: 10px 20px;
+  border-radius: 5px;
+  margin-bottom: 20px;
 }
 
-.sketch-area {
-  margin: auto;
-  margin-top: 20px;
-  width: auto;
-  height: auto;
-  border: 3px solid #ccc;
-  padding: 10px;
+.top-bar-button {
+  padding: 8px 12px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #4caf50;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
+
+.top-bar-button:hover {
+  background-color: #357a38;
+}
+
+.top-bar-select,
+.top-bar-label,
+.top-bar-input {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  margin-right: 10px;
+}
+
+.top-bar-input {
+  cursor: pointer;
+}
+
+/* Styles for the left toolbar */
+.toolbar-left {
+  background-color: #f2f2f2;
+  border-radius: 5px;
+  padding: 20px;
+}
+
+.toolbar-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.shape-button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #e0e0e0;
+  color: #333;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.shape-button i {
+  margin-right: 10px;
+}
+
+.shape-button:hover {
+  background-color: #ccc;
+}
+
+/* Styles for the sketch area */
+.sketch-area {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+/* Styles for the right toolbar */
+.toolbar-right {
+  background-color: #f2f2f2;
+  border-radius: 5px;
+  padding: 20px;
+}
+
+.right-toolbar-buttons {
+  display: flex;
+  flex-direction: column;
+}
+
+.toolbar-button {
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #4caf50;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.toolbar-button:hover {
+  background-color: #357a38;
+}
+
+/* Styles for the shape options */
+.shape-options {
+  margin-top: 20px;
+}
+
+.options-label {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.color-options {
+  display: flex;
+  align-items: center;
+}
+
+.fill-label,
+.stroke-label {
+  font-weight: 300;
+  margin-right: 10px;
+  font-size: 14px;
+}
+/* Add any other specific styles or adjustments as needed */
+
+
+
 </style>
 
 
