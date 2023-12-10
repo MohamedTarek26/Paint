@@ -1,8 +1,8 @@
 package com.paint.paint.Shapes;
 
 public class Square extends Shape {
-    public int width = 100;
-    public int height = 100;
+    public int width = 300;
+    public int height = 300;
 
     public Square() {
         this.name = "Square";

@@ -1,8 +1,8 @@
 package com.paint.paint.Shapes;
 
 public class Rectangle extends Shape {
-    public int width = 200;
-    public int height = 100;
+    public int width = 500;
+    public int height = 250;
 
     public Rectangle() {
         this.name = "Rectangle";
