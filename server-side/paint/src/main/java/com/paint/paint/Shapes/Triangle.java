@@ -2,7 +2,7 @@ package com.paint.paint.Shapes;
 
 public class Triangle extends Shape{
     public int sides = 3;
-    public int radius = 250;
+    public int radius = 90;
 
     public Triangle() {
         this.name = "Triangle";

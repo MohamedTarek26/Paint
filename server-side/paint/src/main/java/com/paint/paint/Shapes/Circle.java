@@ -2,7 +2,7 @@ package  com.paint.paint.Shapes;
 
 public class Circle extends Shape {
 
-    public int radius = 300;
+    public int radius = 50;
 
     public Circle() {
         this.name = "Circle";

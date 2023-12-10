@@ -5,7 +5,7 @@ public class Line extends Shape{
     public Line() {
 
         this.name = "Line";
-        this.coordinates = new int[]{400, 120, 400, 120};
+        this.coordinates = new int[]{100, 50, 200, 50};
         this.setStroke("Black");
     }
     public Line(Line target) {
