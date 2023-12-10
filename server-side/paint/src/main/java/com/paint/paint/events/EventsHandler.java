@@ -37,7 +37,13 @@ public class EventsHandler {
     public void redo(){
         if (currentEventIndex < events.size() - 1){
             currentEventIndex++;
-            events.get(currentEventIndex).apply();
+            Event currentEvent = events.get(currentEventIndex);
+            currentEvent.apply();
+            // check if currentEvent is of type SelectionChangeEvent
+            if (currentEventIndex < events.size() - 1 && currentEvent instanceof SelectionChangeEvent){
+                currentEventIndex++;
+                events.get(currentEventIndex).apply();
+            }
         }
     }
 
