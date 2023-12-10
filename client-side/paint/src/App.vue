@@ -14,6 +14,7 @@
     <!-- Left toolbar -->
     <div class="toolbar-left">
       <p class="toolbar-title">Shapes</p>
+      <div class="left-toolbar-buttons">
       <button @click="createShape('line')" class="shape-button">
         <i class="fas fa-grip-lines"></i> Line
       </button>
@@ -32,6 +33,7 @@
       <button @click="createShape('triangle')" class="shape-button">
         <i class="fas fa-play"></i> Triangle
       </button>
+    </div>
       <!-- Add other shape buttons -->
     </div>
 
@@ -45,6 +47,7 @@
 
     <!-- Right toolbar -->
     <div class="toolbar-right">
+      <p class="toolbar-title">Actions</p>
       <div class="right-toolbar-buttons">
         <button @click="undo" class="toolbar-button">Undo</button>
         <button @click="redo" class="toolbar-button">Redo</button>
@@ -54,12 +57,13 @@
         <label class="options-label">Color:</label>
         <div class="color-options">
           <label class="fill-label">Fill:</label>
-          <input type="checkbox" v-model="isFilled" @change="changeColorFill" />
-          <input type="color" v-if="isFilled" v-model="FillColorValue" @change="changeColorFill" />
-
+          <button @click="changeColorFill" class="toolbar-button">Change</button>
+          <input type="color"  v-model="FillColorValue" @change="changeColorsOfFill" />
+        </div>
+        <div class="color-options">
           <label class="stroke-label">Stroke:</label>
-          <input type="checkbox" v-model="isStroke" @change="changeColorStroke" />
-          <input type="color" v-if="isStroke" v-model="StrokeColorValue" @change="changeColorStroke" />
+          <button @click="changeColorStroke" class="toolbar-button">Change</button>
+          <input type="color"  v-model="StrokeColorValue" @change="changeColorOfStroke" />
         </div>
         <button @click="copy" class="toolbar-button">Copy</button>
       </div>
@@ -87,8 +91,8 @@ export default {
       //   width: 700,
       //   height: 500,
       // },
-      FillcolorValue: "black",
-      StrokecolorValue: "black",
+      FillColorValue: "black",
+      StrokeColorValue: "black",
       saveType: null,
       isFilled: false,
       isStroke: false,
@@ -109,8 +113,8 @@ export default {
     // Create a Konva stage
     this.stage = new Konva.Stage({
       container: stageContainer,
-      width: 800,
-      height: 500,
+      width: 3200,
+      height: 1700,
     });
 
     // Create a layer
@@ -176,22 +180,41 @@ export default {
     changeColorFill() {
       const shape = this.shapes[this.selectedShape];
       if (this.isFilled) {
-        shape.fill(this.FillcolorValue);
-      } else {
         shape.fill("transparent");
+        this.isFilled = false;
+
+      } else {
+        shape.fill(this.FillColorValue);
+        this.isFilled = true;
       }
       this.layer.draw();
       this.postColorShape(this.selectedShape, this.shapes[this.selectedShape]);
     },
+    changeColorsOfFill() {
+      const shape = this.shapes[this.selectedShape];
+      shape.fill(this.FillColorValue);
+      this.layer.draw();
+      this.postColorShape(this.selectedShape, this.shapes[this.selectedShape]);
+      this.isFilled = true;
+    },
     changeColorStroke() {
       const shape = this.shapes[this.selectedShape];
       if (this.isStroke) {
-        shape.stroke(this.StrokecolorValue);
-      } else {
         shape.stroke("transparent");
+        this.isStroke = false;
+      } else {
+        shape.stroke(this.StrokeColorValue);
+        this.isStroke = true;
       }
       this.layer.draw();
       this.postStrokeShape(this.selectedShape, this.shapes[this.selectedShape]);
+    },
+    changeColorOfStroke() {
+      const shape = this.shapes[this.selectedShape];
+      shape.stroke(this.StrokeColorValue);
+      this.layer.draw();
+      this.postStrokeShape(this.selectedShape, this.shapes[this.selectedShape]);
+      this.isStroke = true;
     },
 
     // The save part
@@ -265,6 +288,10 @@ export default {
             this.selectedShape = this.shapes.length - 1;
             console.log("after: " + this.selectedShape);
             console.log(this.shapes);
+            this.isFilled = shape.fill() !== "transparent";
+            if (!this.isFilled) this.FillcolorValue = shape.fill();
+            this.isStroke = shape.stroke() !== "transparent";
+            if (this.stroke) this.StrokecolorValue = shape.stroke();
             break;
           }
         }
@@ -844,16 +871,251 @@ export default {
 </script>
 
 <style>
-/* Styles for the top bar */
+
+/* Global Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-size: 50px;
+  font-family: sans-serif;
+  
+}
+
+body {
+  font-family: sans-serif;
+  background-color: #4d4d4d;
+}
+
+/* Container & Layout */
+.container {
+  display: flex;
+  flex-direction: row;
+  font-size: 50px;
+
+}
+
+.content {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  font-size: 50px;
+}
+
+/* Top Bar */
 .top-bar {
+  position: absolute;
+  top: 150px;
+  left: 60dvb;
+  width: 80dvh;
+  background-color: #8d6f6f;
+  padding: 10px 20px;
+  border-radius: 50px;
+  /* margin-bottom: 20px; */
+  display: flex;
+  align-items: center;
+  display: inline-block;
+}
+
+.top-bar-button {
+  padding: 8px 12px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 20px;
+  background-color: #4caf50;
+  color: white;
+  font-size: 50px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.top-bar-button:hover {
+  background-color: #357a38;
+}
+
+.top-bar-select,
+.top-bar-label,
+.top-bar-input {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  /* font-size: 14px; */
+  margin-right: 10px;
+}
+
+.top-bar-input {
+  cursor: pointer;
+}
+
+/* Left Toolbar */
+.toolbar-left {
+  position: absolute;
+  top: 300px;
+  left: 50px;
+  width: 500px;
+  height: 78dvb;
+  background-color: #8d6f6f;
+  border-radius: 20px;
+  padding: 20px;
+  margin: auto;
+  margin-right: 20px;
+  /* margin-top: 50px; */
+  text-align: center;
+
+
+}
+
+.toolbar-title {
+  /* font-size: 18px; */
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.shape-button {
+  display: block;
+  width: 100%;
+  height: 100px;
+  text-align: left;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 200px;
+  margin: 0px 50px 50px 0px;
+  background-color: #4caf50;
+  color: #ffffff;
+  /* font-size: 16px; */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-align: center;
+
+}
+
+.shape-button i {
+  margin-right: 10px;
+}
+
+.shape-button:hover {
+  background-color: #ccc;
+}
+
+/* Sketch Area */
+.sketch-area {
+  position: absolute;
+  top: 300px;
+  left: 600px;
+  /* flex: 1; */
+  margin: 10px 10px 10px 10px;
+  padding: 10px 10px 10px 10px;
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+/* Right Toolbar */
+.toolbar-right {
+  position: absolute;
+  top: 300px;
+  right: 50px;
+  width: 500px;
+  height: 78dvb;
+  background-color: #8d6f6f;
+  border-radius: 20px;
+  padding: 20px;
+  text-align: center;
+  
+}
+
+.right-toolbar-buttons {
+  display: flex;
+  flex-direction: column;
+}
+.toolbar-button {
+  font-family: Roboto, sans-serif;
+  /* font-size: 16px; */
+  padding: 10px 20px;
+  border-radius: 200px;
+  border: none;
+  margin-bottom: 50px;
+  background-color: #4caf50;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toolbar-button:hover {
+  background-color: #357a38;
+}
+.options-label {
+  /* display: flex; */
+  font-family: Roboto, sans-serif;
+  font-weight: bold;
+  /* font-size: 16px; */
+  margin-bottom: 10px;
+}
+
+.color-options {
+  display: flex;
+  align-items: center;
+}
+
+.fill-label,
+.stroke-label {
+  display: flex;
+  font-weight: 500;
+  margin-right: 10px;
+  
+  /* font-size: 14px; */
+}
+
+input[type="color"] {
+
+  border: 10px solid #ccc;
+  border-radius: 10px;
+  padding: 5px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+input[type="color"]::-webkit-color-swatch {
+  width: 100px;
+  /* height: 50px; */
+}
+
+/* Selected Shape */
+.selected-shape {
+  border: 5px dashed #00f;
+}
+
+
+</style>
+
+<!-- /* Styles for the top bar */
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+/* .top-bar {
   display: flex;
   align-items: center;
   background-color: #f2f2f2;
   padding: 10px 20px;
   border-radius: 5px;
   margin-bottom: 20px;
+} */
+/* Styles for the top bar */
+.top-bar {
+  background-color: #f2f2f2;
+  padding: 10px 20px;
+  border-radius: 5px;
+  margin-bottom: 20px;
 }
-
+/* Styles for the content section */
+.content {
+  display: flex;
+  flex: 1;
+}
 .top-bar-button {
   padding: 8px 12px;
   margin-right: 10px;
@@ -884,11 +1146,19 @@ export default {
   cursor: pointer;
 }
 
+/* Styles for the left toolbar
+.toolbar-left {
+  background-color: #f2f2f2;
+  border-radius: 5px;
+  padding: 20px;
+} */
+
 /* Styles for the left toolbar */
 .toolbar-left {
   background-color: #f2f2f2;
   border-radius: 5px;
   padding: 20px;
+  margin-right: 20px;
 }
 
 .toolbar-title {
@@ -921,10 +1191,17 @@ export default {
 }
 
 /* Styles for the sketch area */
+/* .sketch-area {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+} */
+/* Styles for the sketch area */
 .sketch-area {
   border: 1px solid #ccc;
   border-radius: 5px;
   overflow: hidden;
+  flex: 1;
 }
 
 /* Styles for the right toolbar */
@@ -978,11 +1255,7 @@ export default {
   font-size: 14px;
 }
 /* Add any other specific styles or adjustments as needed */
-
-
-
-</style>
-
+ -->
 
 <!-- // changex(){
   //   //console.log(this.xValue);
