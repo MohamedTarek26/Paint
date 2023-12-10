@@ -113,8 +113,8 @@ export default {
     // Create a Konva stage
     this.stage = new Konva.Stage({
       container: stageContainer,
-      width: 3200,
-      height: 1700,
+      width: 800,
+      height: 500,
     });
 
     // Create a layer
@@ -877,7 +877,7 @@ export default {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-size: 50px;
+  font-size: 12px;
   font-family: sans-serif;
   
 }
@@ -891,7 +891,7 @@ body {
 .container {
   display: flex;
   flex-direction: row;
-  font-size: 50px;
+  font-size: 12px;
 
 }
 
@@ -899,15 +899,15 @@ body {
   display: flex;
   flex: 1;
   flex-direction: row;
-  font-size: 50px;
+  font-size: 12px;
 }
 
 /* Top Bar */
 .top-bar {
   position: absolute;
-  top: 150px;
-  left: 60dvb;
-  width: 80dvh;
+  top: 50px;
+  left: 68dvb;
+  width: auto;
   background-color: #8d6f6f;
   padding: 10px 20px;
   border-radius: 50px;
@@ -924,7 +924,7 @@ body {
   border-radius: 20px;
   background-color: #4caf50;
   color: white;
-  font-size: 50px;
+  font-size: 12px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
@@ -950,10 +950,10 @@ body {
 /* Left Toolbar */
 .toolbar-left {
   position: absolute;
-  top: 300px;
+  top: 150px;
   left: 50px;
-  width: 500px;
-  height: 78dvb;
+  width: 200px;
+  height: 71.5dvb;
   background-color: #8d6f6f;
   border-radius: 20px;
   padding: 20px;
@@ -974,13 +974,13 @@ body {
 .shape-button {
   display: block;
   width: 100%;
-  height: 100px;
+  height: auto;
   text-align: left;
   padding: 10px;
   margin-bottom: 10px;
   border: none;
   border-radius: 200px;
-  margin: 0px 50px 50px 0px;
+  margin: 0px 25px 25px 0px;
   background-color: #4caf50;
   color: #ffffff;
   /* font-size: 16px; */
@@ -1001,24 +1001,24 @@ body {
 /* Sketch Area */
 .sketch-area {
   position: absolute;
-  top: 300px;
-  left: 600px;
+  top: 150px;
+  left: 340px;
   /* flex: 1; */
-  margin: 10px 10px 10px 10px;
-  padding: 10px 10px 10px 10px;
+  /* margin: 0px 0px 10px 10px; */
+  /* padding: 0px 0px 0px 0px; */
   background-color: #f8f8f8;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 20px;
   overflow: hidden;
 }
 
 /* Right Toolbar */
 .toolbar-right {
   position: absolute;
-  top: 300px;
-  right: 50px;
-  width: 500px;
-  height: 78dvb;
+  top: 150px;
+  right: 100px;
+  width: 200px;
+  height: 71.5dvb;
   background-color: #8d6f6f;
   border-radius: 20px;
   padding: 20px;
@@ -1036,7 +1036,7 @@ body {
   padding: 10px 20px;
   border-radius: 200px;
   border: none;
-  margin-bottom: 50px;
+  margin-bottom: 25px;
   background-color: #4caf50;
   color: white;
   cursor: pointer;
@@ -1056,7 +1056,7 @@ body {
 }
 
 .color-options {
-  display: flex;
+  display: block;
   align-items: center;
 }
 
@@ -1066,7 +1066,7 @@ body {
   font-weight: 500;
   margin-right: 10px;
   
-  /* font-size: 14px; */
+  font-size: 14px;
 }
 
 input[type="color"] {
@@ -1089,325 +1089,3 @@ input[type="color"]::-webkit-color-swatch {
 
 
 </style>
-
-<!-- /* Styles for the top bar */
-.container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
-/* .top-bar {
-  display: flex;
-  align-items: center;
-  background-color: #f2f2f2;
-  padding: 10px 20px;
-  border-radius: 5px;
-  margin-bottom: 20px;
-} */
-/* Styles for the top bar */
-.top-bar {
-  background-color: #f2f2f2;
-  padding: 10px 20px;
-  border-radius: 5px;
-  margin-bottom: 20px;
-}
-/* Styles for the content section */
-.content {
-  display: flex;
-  flex: 1;
-}
-.top-bar-button {
-  padding: 8px 12px;
-  margin-right: 10px;
-  border: none;
-  border-radius: 5px;
-  background-color: #4caf50;
-  color: white;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.top-bar-button:hover {
-  background-color: #357a38;
-}
-
-.top-bar-select,
-.top-bar-label,
-.top-bar-input {
-  padding: 8px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-  margin-right: 10px;
-}
-
-.top-bar-input {
-  cursor: pointer;
-}
-
-/* Styles for the left toolbar
-.toolbar-left {
-  background-color: #f2f2f2;
-  border-radius: 5px;
-  padding: 20px;
-} */
-
-/* Styles for the left toolbar */
-.toolbar-left {
-  background-color: #f2f2f2;
-  border-radius: 5px;
-  padding: 20px;
-  margin-right: 20px;
-}
-
-.toolbar-title {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 15px;
-}
-
-.shape-button {
-  display: block;
-  width: 100%;
-  text-align: left;
-  padding: 10px;
-  margin-bottom: 10px;
-  border: none;
-  border-radius: 5px;
-  background-color: #e0e0e0;
-  color: #333;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.shape-button i {
-  margin-right: 10px;
-}
-
-.shape-button:hover {
-  background-color: #ccc;
-}
-
-/* Styles for the sketch area */
-/* .sketch-area {
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  overflow: hidden;
-} */
-/* Styles for the sketch area */
-.sketch-area {
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  overflow: hidden;
-  flex: 1;
-}
-
-/* Styles for the right toolbar */
-.toolbar-right {
-  background-color: #f2f2f2;
-  border-radius: 5px;
-  padding: 20px;
-}
-
-.right-toolbar-buttons {
-  display: flex;
-  flex-direction: column;
-}
-
-.toolbar-button {
-  padding: 8px 12px;
-  margin-bottom: 10px;
-  border: none;
-  border-radius: 5px;
-  background-color: #4caf50;
-  color: white;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.toolbar-button:hover {
-  background-color: #357a38;
-}
-
-/* Styles for the shape options */
-.shape-options {
-  margin-top: 20px;
-}
-
-.options-label {
-  font-weight: bold;
-  font-size: 16px;
-  margin-bottom: 10px;
-}
-
-.color-options {
-  display: flex;
-  align-items: center;
-}
-
-.fill-label,
-.stroke-label {
-  font-weight: 300;
-  margin-right: 10px;
-  font-size: 14px;
-}
-/* Add any other specific styles or adjustments as needed */
- -->
-
-<!-- // changex(){
-  //   //console.log(this.xValue);
-  //   const shape = this.shapes[this.selectedShape];
-  //   shape.x(this.xValue);
-  //   this.layer.draw();
-  // },
-  // changey(){
-  //   //console.log(this.yValue);
-  //   const shape = this.shapes[this.selectedShape];
-  //   shape.y(this.yValue);
-  //   this.layer.draw();
-  // }, -->
-
-
-  <!-- // createShape() {
-    //   let shape;
-    //   if (this.selectedShapeType === 'line') {
-    //     shape=this.addLine();
-    //   } else if (this.selectedShapeType === 'square') {
-    //     shape=this.addSquare();
-    //   } else if (this.selectedShapeType === 'rectangle') {
-    //     shape=this.addRectangle();
-    //   } else if (this.selectedShapeType === 'ellipse') {
-    //     shape=this.addEllipse();
-    //   } else if (this.selectedShapeType === 'circle') {
-    //     shape=this.addCircle();
-    //   } else if (this.selectedShapeType === 'triangle') {
-    //     shape=this.addTriangle();
-    //   } else if (this.selectedShapeType === 'star') {
-    //     shape=this.addStar();
-    //   }
-    //   else
-    //   {
-    //     console.log("no shape chosen !");
-    //     return;
-    //   }
-    //   this.addShapeToLayer(shape);
-    // }, -->
-
-    <!--  // addCircle() {
-      //   const circ = new Konva.Circle({
-      //     name: 'circle',
-      //     x: 100,
-      //     y: 100,
-      //     radius: 50,
-      //     fill: 'green',
-      //     draggable: true,
-      //   });
-  
-      //   return circ;
-      // },
-      // addRectangle() {
-      //   const rect = new Konva.Rect({
-      //     name: 'rectangle',
-      //     x: 50,
-      //     y: 50,
-      //     width: 200,
-      //     height: 100,
-      //     fill: 'black',
-      //     draggable: true,
-  
-      //   });
-  
-      //   return rect;
-      // },
-      // addTriangle() {
-      //   const triangle = new Konva.RegularPolygon({
-  
-      //     // name: 'triangle',
-      //     // x: 100,
-      //     // y: 100,
-      //     // sides: 3,
-      //     // radius: 90,
-      //     // fill: 'blue',
-      //     fill: "blue",
-      //     name: "triangle",
-      //     radius: 90,
-      //     rotation: 0,
-      //     scalex: 1,
-      //     scaley: 1,
-      //     sides: 3,
-      //     stroke: "transparent",
-      //     x: 100,
-      //     y: 100,
-      //     draggable: true,
-      //   });
-      //   return triangle;
-  
-      // },
-      // addStar() {
-      //   const star = new Konva.Star({
-      //     name: 'star',
-      //     x: 100,
-      //     y: 100,
-      //     numPoints: 5,
-      //     innerRadius: 40,
-      //     outerRadius: 70,
-      //     fill: 'yellow',
-      //     draggable: true,
-      //   });
-  
-      //   return star;
-      // },
-  
-      // addEllipse() {
-      //   const ellipse = new Konva.Ellipse({
-      //     name: 'ellipse',
-      //     x: 100,
-      //     y: 100,
-      //     radiusX: 50,
-      //     radiusY: 30,
-      //     fill: 'orange',
-      //     draggable: true,
-      //   });
-      //   return ellipse ;
-      // },
-      // addSquare() {
-      //   const square = new Konva.Rect({
-      //     name: 'square',
-      //     x: 100,
-      //     y: 100,
-      //     width: 100,
-      //     height: 100,
-      //     fill: 'cyan',
-      //     draggable: true,
-      //   });
-      //   return square;
-      // },
-      // addLine() {
-      //   const line = new Konva.Line({
-      //     name: 'line',
-      //     points: [100, 50, 200, 50],
-      //     stroke: 'purple',
-      //     strokeWidth: 5,
-      //     draggable: true,
-      //   });
-      //   return line;
-  
-      // }, -->
-
-<!-- 
-      // const jsonExample = 
-      //   {
-      //     "name": "square",
-      //     "x": 300,
-      //     "y": 300,
-      //     "rotation": 0,
-      //     "scaleX":1,
-      //     "scaleY":1,
-      //     "stroke":"Red",
-      //     "height": 100,
-      //     "width": 100,
-      //     "color": "Transparent"
-      //   }; -->
